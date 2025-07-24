@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: The 2023 Cricket World Cup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: The infographic follows a top-down narrative structure. It begins with the final outcome and key tournament-wide stats to hook the user. It then delves into the core narrative: the contrasting journeys of the two finalists, India and Australia. The middle sections are dedicated to celebrating individual brilliance (Record Breakers) and inspiring underdog stories, adding depth and context. The narrative culminates in a detailed "Autopsy of the Final," explaining the key strategic moments that led to the result. This linear storytelling approach was chosen to guide the user through the complex events of a six-week tournament in a logical, compelling, and easily digestible manner. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Key Tournament Stats (Title, Attendance, Top Performers) -> Goal: Inform -> Viz: "Single Big Number" callouts -> Justification: High-impact, scannable summary. -> Method: HTML/Tailwind. (NO SVG)
+        - Report Info: India's vs. Australia's path to the final -> Goal: Compare/Change -> Viz: Custom HTML/CSS timeline -> Justification: Visually represents the contrast between India's flawless run and Australia's recovery. -> Method: HTML/Tailwind. (NO SVG/Mermaid)
+        - Report Info: Top Run Scorers & Wicket Takers -> Goal: Compare/Rank -> Viz: Donut Chart (Runs) & Bar Chart (Wickets) -> Justification: Donut chart shows Kohli's dominant share of runs among the top players. Bar chart effectively compares wicket totals. -> Method: Chart.js/Canvas. (NO SVG)
+        - Report Info: Afghanistan & Netherlands upset wins -> Goal: Inform -> Viz: Styled "Upset Alert" cards -> Justification: Creates a visually distinct and exciting way to present these key results. -> Method: HTML/Tailwind. (NO SVG)
+        - Report Info: Final match result & key turning points -> Goal: Compare/Organize -> Viz: Horizontal Bar Chart & custom HTML diagram -> Justification: Bar chart provides a clear visual of the score difference. The diagram simplifies the complex strategy behind the toss decision. -> Method: Chart.js/Canvas & HTML/Tailwind. (NO SVG/Mermaid)
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #FFFFFF;
+        }
+        .font-teko {
+            font-family: 'Teko', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .path-win {
+            background-color: #4CAF50;
+            border-color: #388E3C;
+            color: white;
+        }
+        .path-loss {
+            background-color: #F44336;
+            border-color: #D32F2F;
+            color: white;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="font-teko text-6xl md:text-8xl font-bold uppercase tracking-wider" style="color: #004AAD;">The Ahmedabad Silence</h1>
+            <p class="text-xl md:text-2xl text-slate-600 mt-2">How Australia conquered the unbeatable to claim a sixth crown at the 2023 Cricket World Cup.</p>
+        </header>
+
+        <section id="overview" class="mb-16">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center">
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <div class="font-teko text-6xl font-bold" style="color: #F7B32B;">6th</div>
+                    <div class="text-lg text-slate-700">World Cup Title for Australia</div>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <div class="font-teko text-6xl font-bold" style="color: #F7B32B;">765</div>
+                    <div class="text-lg text-slate-700">Runs by Virat Kohli (New Record)</div>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <div class="font-teko text-6xl font-bold" style="color: #F7B32B;">24</div>
+                    <div class="text-lg text-slate-700">Wickets by Mohammed Shami</div>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <div class="font-teko text-6xl font-bold" style="color: #F7B32B;">1.25M+</div>
+                    <div class="text-lg text-slate-700">Total Tournament Attendance</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="journeys" class="mb-16">
+            <h2 class="font-teko text-5xl text-center mb-8 uppercase text-slate-900">A Tale of Two Journeys</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                    <h3 class="font-teko text-4xl mb-4 text-center" style="color: #4198D7;">India: The Flawless March</h3>
+                    <p class="text-center text-slate-600 mb-6">A 10-match unbeaten streak built on overwhelming dominance, leaving opponents dismantled and an air of destiny around the host nation.</p>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs AUS">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs AFG">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs PAK">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs BAN">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs NZ">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs ENG">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs SL">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs SA">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs NED">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-lg" title="SF Win vs NZ">W</div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                    <h3 class="font-teko text-4xl mb-4 text-center" style="color: #F7B32B;">Australia: The Battle-Hardened Recovery</h3>
+                    <p class="text-center text-slate-600 mb-6">After a disastrous start, Australia was forced into a knockout mindset, forging resilience in a series of high-pressure, must-win encounters.</p>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <div class="path-loss w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Loss vs IND">L</div>
+                        <div class="path-loss w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Loss vs SA">L</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs SL">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs PAK">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs NED">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs NZ">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs ENG">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs AFG">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold" title="Win vs BAN">W</div>
+                        <div class="path-win w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-lg" title="SF Win vs SA">W</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="records" class="mb-16">
+            <h2 class="font-teko text-5xl text-center mb-8 uppercase text-slate-900">The Record Breakers</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                    <h3 class="font-teko text-4xl text-center mb-2 text-slate-800">Virat Kohli: The Run Machine</h3>
+                    <p class="text-center text-slate-600 mb-4">With 765 runs, Kohli shattered the 20-year-old record for most runs in a single World Cup and became the first player to score 50 ODI centuries.</p>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="topRunScorersChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                    <h3 class="font-teko text-4xl text-center mb-2 text-slate-800">Mohammed Shami: The Wicket Taker</h3>
+                    <p class="text-center text-slate-600 mb-4">Despite missing the first four games, Shami finished as the tournament's top wicket-taker with 24 scalps, including a record-breaking 7/57 in the semi-final.</p>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="topWicketTakersChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="underdogs" class="mb-16">
+            <h2 class="font-teko text-5xl text-center mb-8 uppercase text-slate-900">The Underdogs' Bite</h2>
+            <p class="text-center max-w-3xl mx-auto text-slate-600 mb-8">The tournament was electrified by spirited campaigns from Afghanistan and the Netherlands, who defied expectations and secured historic victories against cricketing giants.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-red-100 border-2 border-red-300 p-4 rounded-lg text-center">
+                    <div class="font-teko text-3xl text-red-600">UPSET ALERT</div>
+                    <div class="text-2xl font-bold text-slate-900">Afghanistan beat England</div>
+                    <div class="text-lg text-slate-700">by 69 runs</div>
+                </div>
+                <div class="bg-red-100 border-2 border-red-300 p-4 rounded-lg text-center">
+                    <div class="font-teko text-3xl text-red-600">UPSET ALERT</div>
+                    <div class="text-2xl font-bold text-slate-900">Netherlands beat South Africa</div>
+                    <div class="text-lg text-slate-700">by 38 runs</div>
+                </div>
+                 <div class="bg-red-100 border-2 border-red-300 p-4 rounded-lg text-center">
+                    <div class="font-teko text-3xl text-red-600">UPSET ALERT</div>
+                    <div class="text-2xl font-bold text-slate-900">Afghanistan beat Pakistan</div>
+                    <div class="text-lg text-slate-700">by 8 wickets</div>
+                </div>
+                 <div class="bg-red-100 border-2 border-red-300 p-4 rounded-lg text-center">
+                    <div class="font-teko text-3xl text-red-600">UPSET ALERT</div>
+                    <div class="text-2xl font-bold text-slate-900">Netherlands beat Bangladesh</div>
+                    <div class="text-lg text-slate-700">by 87 runs</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="final" class="bg-slate-100 p-6 md:p-8 rounded-lg">
+            <h2 class="font-teko text-5xl text-center mb-2 uppercase text-slate-900">Autopsy of the Final</h2>
+            <p class="text-center max-w-3xl mx-auto text-slate-600 mb-8">Australia's victory was built on a foundation of bold strategy and flawless execution under pressure, neutralizing India's strengths and silencing the home crowd.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h3 class="font-teko text-4xl text-center mb-4 text-slate-800">The Result</h3>
+                     <div class="chart-container" style="height: 200px;">
+                        <canvas id="finalResultChart"></canvas>
+                    </div>
+                    <div class="mt-6 text-center bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <div class="font-teko text-3xl" style="color: #F7B32B;">Player of the Match: Travis Head</div>
+                        <p class="text-slate-600">A stunning diving catch to dismiss Rohit Sharma was followed by a magnificent, match-winning 137 runs.</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-teko text-4xl text-center mb-4 text-slate-800">The Masterstroke: Cummins' Toss Decision</h3>
+                    <div class="space-y-4">
+                        <div class="bg-slate-200 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-blue-700">Hypothesis: Batting Second is an Advantage</h4>
+                            <p class="text-sm text-slate-600">Captain Pat Cummins chose to field first, betting against convention in a final.</p>
+                        </div>
+                        <div class="text-center font-teko text-2xl text-slate-500">&#11167;</div>
+                        <div class="flex gap-4">
+                            <div class="flex-1 bg-slate-200 p-4 rounded-lg text-center">
+                                <h4 class="font-bold text-lg" style="color: #D69E2E;">DAY (India Batting)</h4>
+                                <p class="text-sm text-slate-600">Slow, dry pitch offered variable bounce, making fluent scoring difficult.</p>
+                            </div>
+                            <div class="flex-1 bg-slate-200 p-4 rounded-lg text-center">
+                                <h4 class="font-bold text-lg" style="color: #D69E2E;">NIGHT (Australia Batting)</h4>
+                                <p class="text-sm text-slate-600">Evening dew settled, making the pitch easier to bat on and negating spin.</p>
+                            </div>
+                        </div>
+                        <div class="text-center font-teko text-2xl text-slate-500">&#11167;</div>
+                        <div class="bg-green-100 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-green-700">Result: Strategy Vindicated</h4>
+                            <p class="text-sm text-slate-600">Australia comfortably chased the target as batting conditions improved significantly under lights.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const chartColors = {
+                blue: '#4198D7',
+                gold: '#F7B32B',
+                lightBlue: 'rgba(65, 152, 215, 0.5)',
+                lightGold: 'rgba(247, 179, 43, 0.5)',
+                text: '#334155', // slate-700
+                grid: '#e2e8f0' // slate-200
+            };
+
+            const defaultOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: chartColors.text,
+                            font: {
+                                size: 14,
+                                family: "'Roboto', sans-serif"
+                            }
+                        }
+                    },
+                    tooltip: {
+                        titleFont: { size: 16, family: "'Teko', sans-serif" },
+                        bodyFont: { size: 12, family: "'Roboto', sans-serif" },
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            };
+
+            if (document.getElementById('topRunScorersChart')) {
+                new Chart(document.getElementById('topRunScorersChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Virat Kohli (IND)', 'Rohit Sharma (IND)', 'Quinton de Kock (SA)', 'Rachin Ravindra (NZ)', 'Daryl Mitchell (NZ)'],
+                        datasets: [{
+                            label: 'Runs',
+                            data: [765, 597, 594, 578, 552],
+                            backgroundColor: [chartColors.blue, chartColors.lightBlue, '#90CDF4', '#63B3ED', '#4299E1'],
+                            borderColor: '#FFFFFF',
+                            borderWidth: 4
+                        }]
+                    },
+                    options: {
+                        ...defaultOptions,
+                        plugins: {
+                            ...defaultOptions.plugins,
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (document.getElementById('topWicketTakersChart')) {
+                new Chart(document.getElementById('topWicketTakersChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['M. Shami (IND)', 'A. Zampa (AUS)', 'D. Madushanka (SL)', 'J. Bumrah (IND)', 'G. Coetzee (SA)'],
+                        datasets: [{
+                            label: 'Wickets (Matches Played)',
+                            data: [24, 23, 21, 20, 20],
+                            backgroundColor: [chartColors.blue, chartColors.gold, chartColors.lightBlue, chartColors.blue, chartColors.lightBlue],
+                            borderColor: [chartColors.blue, chartColors.gold, chartColors.lightBlue, chartColors.blue, chartColors.lightBlue],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        ...defaultOptions,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: chartColors.grid },
+                                ticks: { color: chartColors.text }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: chartColors.text }
+                            }
+                        },
+                        plugins: {
+                            ...defaultOptions.plugins,
+                            legend: { display: false },
+                            tooltip: {
+                                ...defaultOptions.plugins.tooltip,
+                                callbacks: {
+                                    ...defaultOptions.plugins.tooltip.callbacks,
+                                    label: function(context) {
+                                        const matches = [7, 11, 9, 11, 8];
+                                        let label = ' Wickets: ' + context.parsed.y;
+                                        label += ' (in ' + matches[context.dataIndex] + ' matches)';
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (document.getElementById('finalResultChart')) {
+                new Chart(document.getElementById('finalResultChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['India', 'Australia'],
+                        datasets: [{
+                            data: [240, 241],
+                            backgroundColor: [chartColors.blue, chartColors.gold],
+                            barThickness: 50,
+                        }]
+                    },
+                    options: {
+                        ...defaultOptions,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                grid: { color: chartColors.grid },
+                                ticks: { color: chartColors.text }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: { color: chartColors.text, font: { size: 16 } }
+                            }
+                        },
+                        plugins: {
+                            ...defaultOptions.plugins,
+                            legend: { display: false },
+                            tooltip: {
+                                ...defaultOptions.plugins.tooltip,
+                                callbacks: {
+                                    ...defaultOptions.plugins.tooltip.callbacks,
+                                    label: function(context) {
+                                        return ' Score: ' + context.parsed.x;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

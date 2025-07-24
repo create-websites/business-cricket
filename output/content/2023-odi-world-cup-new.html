@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: 2023 Cricket World Cup Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Harmony -->
+    <!-- Application Structure Plan: The application is structured as a multi-section interactive narrative. It starts with a high-level overview and key stats. A sticky navigation bar allows users to jump to thematic deep-dive sections: 'League Stage', 'Underdog Stories', 'Knockouts', and 'The Final'. This non-linear structure empowers users to explore the tournament based on their interests—be it the overall standings, individual team journeys, or the final's tactical nuances. Key interactions include toggling between team paths, filtering the league table, and clicking on key moments in the final to reveal detailed analysis, transforming the static report into an engaging, user-driven experience. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Final League Table -> Goal: Organize/Compare -> Viz: Interactive HTML Table -> Interaction: JS-powered search/filter -> Justification: Allows users to quickly find and compare team performance data, superior to a static table. (NO SVG/Mermaid)
+        - Report Info: India vs. Australia's path -> Goal: Compare/Change -> Viz: Custom HTML/CSS timeline with toggle buttons -> Interaction: JS toggle to switch views -> Justification: Clearly visualizes the contrasting journeys and momentum of the finalists. (NO SVG/Mermaid)
+        - Report Info: Afghanistan & Netherlands upsets -> Goal: Inform -> Viz: Styled "Upset Cards" -> Interaction: Static -> Justification: Creates a visually distinct section to highlight these significant, narrative-rich events. (NO SVG/Mermaid)
+        - Report Info: Semi-Final Results -> Goal: Compare -> Viz: Side-by-side summary cards -> Interaction: Static -> Justification: Presents knockout match results in a clear, easily comparable format. (NO SVG/Mermaid)
+        - Report Info: Top Performers (Runs/Wickets) -> Goal: Compare/Rank -> Viz: Horizontal Bar Charts (Chart.js) -> Interaction: Hover tooltips -> Justification: Best for ranking and comparing statistical leaders with clear labels. (NO SVG/Mermaid)
+        - Report Info: Final Innings Progression -> Goal: Change/Compare -> Viz: Line Chart (Chart.js) -> Interaction: Hover tooltips -> Justification: Visualizes the "boundary drought" and momentum shift during India's innings vs. Australia's steady chase. (NO SVG/Mermaid)
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f1ea; /* Light Beige */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 450px;
+        }
+        .nav-link.active {
+            background-color: #707c5c; /* Muted Green */
+            color: #f4f1ea;
+        }
+        .path-button.active {
+            background-color: #707c5c;
+            color: #f4f1ea;
+            border-color: #707c5c;
+        }
+        .path-win { background-color: #8a9a5b; color: white; }
+        .path-loss { background-color: #b0725b; color: white; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-[#d3c0a3] shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+            <h1 class="text-xl md:text-2xl font-bold text-[#5c4b37]">CWC 2023: An Interactive Analysis</h1>
+            <div class="hidden md:flex items-baseline space-x-2">
+                <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium transition-colors">Overview</a>
+                <a href="#league" class="nav-link px-3 py-2 rounded-md text-sm font-medium transition-colors">League Stage</a>
+                <a href="#underdogs" class="nav-link px-3 py-2 rounded-md text-sm font-medium transition-colors">Underdogs</a>
+                <a href="#knockouts" class="nav-link px-3 py-2 rounded-md text-sm font-medium transition-colors">Knockouts</a>
+                <a href="#final" class="nav-link px-3 py-2 rounded-md text-sm font-medium transition-colors">The Final</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <section id="overview" class="scroll-mt-20 text-center py-12">
+            <h2 class="text-4xl md:text-5xl font-bold text-[#707c5c] mb-4">The Ahmedabad Silence</h2>
+            <p class="max-w-3xl mx-auto text-slate-600 mb-8">
+                This interactive report analyzes the 2023 ICC Men's Cricket World Cup, culminating in Australia's stunning sixth title victory over the dominant host nation, India. Explore the tournament's key narratives, from flawless campaigns and underdog triumphs to the tactical masterclass that decided the final.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white/70 p-6 rounded-lg shadow-sm border border-gray-200">
+                    <div class="text-5xl font-bold text-[#b0725b]">6th</div>
+                    <div class="text-slate-500 mt-1">World Cup Title for Australia</div>
+                </div>
+                <div class="bg-white/70 p-6 rounded-lg shadow-sm border border-gray-200">
+                    <div class="text-5xl font-bold text-[#707c5c]">765</div>
+                    <div class="text-slate-500 mt-1">Runs by Virat Kohli (New Record)</div>
+                </div>
+                <div class="bg-white/70 p-6 rounded-lg shadow-sm border border-gray-200">
+                    <div class="text-5xl font-bold text-[#707c5c]">24</div>
+                    <div class="text-slate-500 mt-1">Wickets by Mohammed Shami</div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-gray-300">
+
+        <section id="league" class="scroll-mt-20 py-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-[#707c5c] mb-8">Narratives of the League Stage</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-4 text-center">Finalists' Path: A Tale of Two Journeys</h3>
+                    <p class="text-center text-slate-600 mb-6">
+                        The finalists had starkly different paths. India enjoyed a flawless, dominant run, while Australia recovered from a poor start, forging resilience through a series of must-win games. Toggle between the teams to see their contrasting routes to the final.
+                    </p>
+                    <div class="flex justify-center gap-4 mb-4">
+                        <button class="path-button active px-4 py-2 border rounded-lg transition-colors" data-team="india">India's Path</button>
+                        <button class="path-button px-4 py-2 border rounded-lg transition-colors" data-team="australia">Australia's Path</button>
+                    </div>
+                    <div id="path-timeline" class="relative pl-6 border-l-2 border-gray-300">
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                     <h3 class="text-2xl font-semibold mb-4">Final League Standings</h3>
+                     <p class="text-slate-600 mb-4">
+                        The 10-team round-robin format provided a clear path to the semi-finals. India topped the table with a perfect record, while Australia finished third after their early stumbles. Use the search box to filter the table by team.
+                     </p>
+                     <input type="text" id="teamSearch" class="w-full p-2 border border-gray-300 rounded-md mb-4" placeholder="Search for a team...">
+                     <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="p-2 border-b-2">Pos</th>
+                                    <th class="p-2 border-b-2">Team</th>
+                                    <th class="p-2 border-b-2 text-center">W</th>
+                                    <th class="p-2 border-b-2 text-center">L</th>
+                                    <th class="p-2 border-b-2 text-center">Pts</th>
+                                    <th class="p-2 border-b-2">NRR</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leagueTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-gray-300">
+
+        <section id="underdogs" class="scroll-mt-20 py-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-[#707c5c] mb-8">The Underdogs' Bite</h2>
+            <p class="max-w-3xl mx-auto text-center text-slate-600 mb-8">
+                The tournament was defined not just by the finalists, but by the inspiring campaigns of Afghanistan and the Netherlands. Their historic victories against top-tier nations signaled a heartening evolution in the global competitive landscape, fueled by talent and experience from global T20 leagues.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-lg border-l-4 border-[#8a9a5b]">
+                    <h3 class="text-2xl font-bold mb-2">Afghanistan's Coming of Age</h3>
+                    <p class="text-slate-600 mb-4">Won 4 matches, stunning former champions England and Pakistan, and secured qualification for the 2025 Champions Trophy.</p>
+                    <div class="font-semibold">Key Upset: Beat England by 69 runs.</div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg border-l-4 border-[#b0725b]">
+                    <h3 class="text-2xl font-bold mb-2">The Netherlands' Dutch Courage</h3>
+                    <p class="text-slate-600 mb-4">As the only Associate Member, they defeated the formidable South Africans and also secured a dominant victory over Bangladesh.</p>
+                    <div class="font-semibold">Key Upset: Beat South Africa by 38 runs.</div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-gray-300">
+
+        <section id="knockouts" class="scroll-mt-20 py-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-[#707c5c] mb-8">Clash of Titans: The Knockouts</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-4">Semi-Final 1: India vs New Zealand</h3>
+                    <p class="text-slate-600 mb-4">India produced a performance of overwhelming dominance, posting a record 397/4. Virat Kohli's historic 50th ODI ton and Mohammed Shami's 7-wicket haul sealed a 70-run win.</p>
+                    <div class="text-sm space-y-2">
+                        <div><strong>IND:</strong> 397/4 (Kohli 117, Iyer 105)</div>
+                        <div><strong>NZ:</strong> 327 (Mitchell 134, Shami 7/57)</div>
+                        <div class="font-bold text-[#707c5c]">India won by 70 runs.</div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-4">Semi-Final 2: Australia vs South Africa</h3>
+                    <p class="text-slate-600 mb-4">A gritty, low-scoring affair. Australia's bowlers stifled South Africa, and despite a tense chase, they held their nerve to secure a 3-wicket victory, showcasing their resilience.</p>
+                     <div class="text-sm space-y-2">
+                        <div><strong>SA:</strong> 212 (Miller 101, Starc 3/34)</div>
+                        <div><strong>AUS:</strong> 215/7 (Head 62, Shamsi 2/42)</div>
+                        <div class="font-bold text-[#b0725b]">Australia won by 3 wickets.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-semibold mb-4 text-center">Top Performers of the Tournament</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-xl font-semibold text-center mb-2">Top Run Scorers</h4>
+                        <div class="chart-container" style="height: 300px;">
+                            <canvas id="topRunScorersChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-semibold text-center mb-2">Top Wicket Takers</h4>
+                        <div class="chart-container" style="height: 300px;">
+                            <canvas id="topWicketTakersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-gray-300">
+
+        <section id="final" class="scroll-mt-20 py-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-[#707c5c] mb-8">Autopsy of the Final: The Ahmedabad Silence</h2>
+             <p class="max-w-3xl mx-auto text-center text-slate-600 mb-8">
+                The final was a tactical masterclass from Australia. Their decision to field first on a slow pitch, backed by exceptional fielding, neutralized India's explosive batting. The chart below shows how India's scoring rate stalled after a fast start, contrasted with Australia's measured and ultimately comfortable chase.
+            </p>
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-center">Innings Progression: India vs Australia</h3>
+                <div class="chart-container">
+                    <canvas id="finalInningsChart"></canvas>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-2">The Masterstroke: The Toss</h3>
+                    <p class="text-slate-600">Pat Cummins' decision to bowl first was a calculated gamble. He correctly predicted the pitch would be difficult to bat on initially but would ease up under lights with the evening dew, neutralizing India's spin threat and giving his batters the advantage.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-2">The Turning Point: The Catch</h3>
+                    <p class="text-slate-600">With India flying at 76/1, Travis Head took a spectacular diving catch to dismiss the dangerous Rohit Sharma. This moment shifted the momentum entirely, leading to a "boundary drought" of over 90 balls and preventing India from posting a commanding total.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    <footer class="bg-[#d3c0a3] text-center py-4 mt-12">
+        <p class="text-sm text-[#5c4b37]">Interactive Report based on the 2023 Cricket World Cup Summary.</p>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const appData = {
+        leagueTable: [
+            { pos: 1, team: 'India', w: 9, l: 0, pts: 18, nrr: '+2.570' },
+            { pos: 2, team: 'South Africa', w: 7, l: 2, pts: 14, nrr: '+1.261' },
+            { pos: 3, team: 'Australia', w: 7, l: 2, pts: 14, nrr: '+0.841' },
+            { pos: 4, team: 'New Zealand', w: 5, l: 4, pts: 10, nrr: '+0.743' },
+            { pos: 5, team: 'Pakistan', w: 4, l: 5, pts: 8, nrr: '-0.199' },
+            { pos: 6, team: 'Afghanistan', w: 4, l: 5, pts: 8, nrr: '-0.336' },
+            { pos: 7, team: 'England', w: 3, l: 6, pts: 6, nrr: '-0.572' },
+            { pos: 8, team: 'Bangladesh', w: 2, l: 7, pts: 4, nrr: '-1.087' },
+            { pos: 9, team: 'Sri Lanka', w: 2, l: 7, pts: 4, nrr: '-1.419' },
+            { pos: 10, team: 'Netherlands', w: 2, l: 7, pts: 4, nrr: '-1.825' },
+        ],
+        paths: {
+            india: [
+                { result: 'W', vs: 'AUS' }, { result: 'W', vs: 'AFG' }, { result: 'W', vs: 'PAK' },
+                { result: 'W', vs: 'BAN' }, { result: 'W', vs: 'NZ' }, { result: 'W', vs: 'ENG' },
+                { result: 'W', vs: 'SL' }, { result: 'W', vs: 'SA' }, { result: 'W', vs: 'NED' },
+                { result: 'W', vs: 'NZ (SF)' }
+            ],
+            australia: [
+                { result: 'L', vs: 'IND' }, { result: 'L', vs: 'SA' }, { result: 'W', vs: 'SL' },
+                { result: 'W', vs: 'PAK' }, { result: 'W', vs: 'NED' }, { result: 'W', vs: 'NZ' },
+                { result: 'W', vs: 'ENG' }, { result: 'W', vs: 'AFG' }, { result: 'W', vs: 'BAN' },
+                { result: 'W', vs: 'SA (SF)' }
+            ]
+        },
+        topPerformers: {
+            runs: {
+                labels: ['V Kohli (IND)', 'R Sharma (IND)', 'Q de Kock (SA)', 'R Ravindra (NZ)', 'D Mitchell (NZ)'],
+                data: [765, 597, 594, 578, 552]
+            },
+            wickets: {
+                labels: ['M Shami (IND)', 'A Zampa (AUS)', 'D Madushanka (SL)', 'J Bumrah (IND)', 'G Coetzee (SA)'],
+                data: [24, 23, 21, 20, 20]
+            }
+        },
+        finalInnings: {
+            labels: ['5', '10', '15', '20', '25', '30', '35', '40', '45', '50'],
+            india: [41, 78, 97, 124, 149, 178, 203, 214, 226, 240],
+            australia: [41, 60, 93, 135, 172, 201, 225, 241, null, null]
+        }
+    };
+
+    const chartColors = {
+        primary: '#707c5c',
+        secondary: '#b0725b',
+        primaryLight: 'rgba(112, 124, 92, 0.2)',
+        text: '#374151',
+        grid: '#e5e7eb'
+    };
+
+    const defaultChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: 'rgba(0,0,0,0.7)',
+                titleFont: { size: 14, weight: 'bold' },
+                bodyFont: { size: 12 },
+                callbacks: {
+                    title: function(tooltipItems) {
+                        const item = tooltipItems[0];
+                        let label = item.chart.data.labels[item.dataIndex];
+                        if (Array.isArray(label)) { return label.join(' '); }
+                        return label;
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: { color: chartColors.grid },
+                ticks: { color: chartColors.text }
+            },
+            x: {
+                grid: { display: false },
+                ticks: { color: chartColors.text }
+            }
+        }
+    };
+
+    function populateLeagueTable(filter = '') {
+        const tableBody = document.getElementById('leagueTableBody');
+        tableBody.innerHTML = '';
+        const filteredData = appData.leagueTable.filter(t => t.team.toLowerCase().includes(filter.toLowerCase()));
+        filteredData.forEach(team => {
+            const row = document.createElement('tr');
+            row.className = 'border-b border-gray-200 hover:bg-gray-50';
+            row.innerHTML = `
+                <td class="p-2">${team.pos}</td>
+                <td class="p-2 font-semibold">${team.team}</td>
+                <td class="p-2 text-center">${team.w}</td>
+                <td class="p-2 text-center">${team.l}</td>
+                <td class="p-2 text-center font-bold">${team.pts}</td>
+                <td class="p-2">${team.nrr}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+    populateLeagueTable();
+    document.getElementById('teamSearch').addEventListener('keyup', (e) => populateLeagueTable(e.target.value));
+
+    function populatePath(team) {
+        const timeline = document.getElementById('path-timeline');
+        timeline.innerHTML = '';
+        appData.paths[team].forEach((match, index) => {
+            const item = document.createElement('div');
+            item.className = 'mb-6';
+            const resultClass = match.result === 'W' ? 'path-win' : 'path-loss';
+            item.innerHTML = `
+                <div class="absolute w-4 h-4 bg-gray-400 rounded-full -left-2 mt-1.5 border-2 border-white"></div>
+                <p class="text-sm text-gray-500">Match ${index + 1}</p>
+                <h4 class="font-semibold">vs ${match.vs}</h4>
+                <p class="text-sm"><span class="font-bold p-1 rounded-md text-xs ${resultClass}">${match.result === 'W' ? 'WIN' : 'LOSS'}</span></p>
+            `;
+            timeline.appendChild(item);
+        });
+    }
+    populatePath('india');
+
+    document.querySelectorAll('.path-button').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelector('.path-button.active').classList.remove('active');
+            button.classList.add('active');
+            populatePath(button.dataset.team);
+        });
+    });
+
+    if (document.getElementById('topRunScorersChart')) {
+        new Chart(document.getElementById('topRunScorersChart'), {
+            type: 'bar',
+            data: {
+                labels: appData.topPerformers.runs.labels,
+                datasets: [{
+                    label: 'Runs',
+                    data: appData.topPerformers.runs.data,
+                    backgroundColor: [chartColors.primary, '#8a9a5b', '#a3b18a', '#b5c49f', '#c7d6b4'],
+                }]
+            },
+            options: { ...defaultChartOptions, indexAxis: 'y' }
+        });
+    }
+
+    if (document.getElementById('topWicketTakersChart')) {
+        new Chart(document.getElementById('topWicketTakersChart'), {
+            type: 'bar',
+            data: {
+                labels: appData.topPerformers.wickets.labels,
+                datasets: [{
+                    label: 'Wickets',
+                    data: appData.topPerformers.wickets.data,
+                    backgroundColor: [chartColors.primary, '#8a9a5b', '#a3b18a', '#b5c49f', '#c7d6b4'],
+                }]
+            },
+            options: { ...defaultChartOptions, indexAxis: 'y' }
+        });
+    }
+
+    if (document.getElementById('finalInningsChart')) {
+        new Chart(document.getElementById('finalInningsChart'), {
+            type: 'line',
+            data: {
+                labels: appData.finalInnings.labels,
+                datasets: [
+                    {
+                        label: 'India',
+                        data: appData.finalInnings.india,
+                        borderColor: chartColors.primary,
+                        backgroundColor: chartColors.primaryLight,
+                        tension: 0.1,
+                        fill: true
+                    },
+                    {
+                        label: 'Australia',
+                        data: appData.finalInnings.australia,
+                        borderColor: chartColors.secondary,
+                        backgroundColor: 'rgba(176, 114, 91, 0.2)',
+                        tension: 0.1,
+                        fill: true
+                    }
+                ]
+            },
+            options: { ...defaultChartOptions, plugins: { ...defaultChartOptions.plugins, legend: { display: true, position: 'bottom' } } }
+        });
+    }
+
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-link');
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 80) {
+                current = section.getAttribute('id');
+            }
+        });
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+                link.classList.add('active');
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

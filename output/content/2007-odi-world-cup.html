@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The 2007 Cricket World Cup: An Interactive Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: The SPA is designed around four core narratives of the 2007 World Cup, rather than the linear report structure. This thematic approach allows users to explore based on interest. The flow is: 1. Hero/Intro: High-level summary of the tournament's dual nature (perfection vs. failure). 2. Navigation Bar: Sticky nav allows users to jump to any theme at any time. 3. Thematic Sections: 'The Australian Dynasty', 'The Great Upsets', 'Record Breakers', and 'Controversy & Legacy'. Each section is a self-contained module with interactive elements. This structure was chosen to make the dense information digestible and engaging, allowing a user to compare Australia's dominance directly against the tournament's chaotic upsets, for example. The user flow is non-linear, encouraging exploration. -->
+    <!-- Visualization & Content Choices: 
+        - Australia's Dominance: Report Info -> Hayden/McGrath stats. Goal -> Compare player contributions. Viz -> Interactive Bar Chart (Chart.js). Interaction -> Buttons to switch between batting/bowling stats. Justification -> A bar chart is excellent for direct comparison of player stats. Library -> Chart.js on Canvas.
+        - The Great Upsets: Report Info -> Ireland vs Pakistan & Bangladesh vs India match summaries. Goal -> Compare the underdog vs. the favorite. Viz -> Side-by-side card layout (HTML/Tailwind). Interaction -> Hover effects on key stats. Justification -> A direct visual comparison of scorecards is more impactful than a complex chart for this narrative. Method -> HTML/CSS.
+        - Record Breakers: Report Info -> List of records broken. Goal -> Showcase the scale of record-breaking achievements. Viz -> Interactive grid of key records (HTML/Tailwind). Interaction -> Clickable stat cards reveal more detailed text descriptions. Justification -> A "wall of stats" makes the achievements feel monumental and encourages user interaction to learn more. Method -> HTML/CSS/JS.
+        - Knockout Stage: Report Info -> Semi-final and Final results. Goal -> Summarize the path to the final. Viz -> A simple, clear flow diagram. Method -> HTML/Tailwind with flexbox to create a bracket-like structure. Justification -> A visual bracket is the most intuitive way to represent a knockout tournament structure.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #333;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link.active {
+            color: #D97706; /* amber-600 */
+            border-bottom-color: #D97706;
+        }
+        .stat-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-800">2007 World Cup</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-amber-600 border-b-2 border-transparent">Overview</a>
+                        <a href="#dynasty" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-amber-600 border-b-2 border-transparent">The Dynasty</a>
+                        <a href="#upsets" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-amber-600 border-b-2 border-transparent">The Upsets</a>
+                        <a href="#records" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-amber-600 border-b-2 border-transparent">The Records</a>
+                        <a href="#legacy" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-amber-600 border-b-2 border-transparent">Legacy</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="overview" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-base font-semibold text-amber-600 tracking-wide uppercase">A Tale of Two Tournaments</h2>
+                <p class="mt-2 text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl">A Caribbean Crucible</p>
+                <p class="mt-5 max-w-3xl mx-auto text-xl text-gray-500">The 2007 Cricket World Cup was a tournament of profound contrasts. It witnessed one of the most dominant team performances in history with Australia's flawless victory, yet was simultaneously plagued by seismic upsets, logistical failures, and a tragedy that cast a long shadow. This interactive experience explores the dual narratives of perfection and chaos that defined this unforgettable event.</p>
+            </div>
+        </section>
+
+        <section id="dynasty" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">The Untouchables: Australia's Perfect Campaign</h2>
+                    <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">Australia achieved a historic third consecutive World Cup, winning all 11 matches. Their campaign was a masterclass in ruthless efficiency, built on overwhelming batting power and relentless bowling precision. Explore the key architects of this legendary performance.</p>
+                </div>
+
+                <div class="mt-12">
+                    <div class="text-center mb-8">
+                        <button id="show-batting" class="bg-amber-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-amber-700 transition">Batting Stars</button>
+                        <button id="show-bowling" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 transition">Bowling Machine</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="dynastyChart"></canvas>
+                    </div>
+                    <div id="player-info" class="mt-8 text-center max-w-2xl mx-auto text-gray-600 fade-in"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="upsets" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">The Tides of Change: The Great Upsets</h2>
+                    <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">While Australia dominated, the tournament's heart-stopping drama came from the underdogs. Two monumental upsets on a single day, March 17, 2007, sent cricketing giants India and Pakistan crashing out of the tournament, reshaping its entire narrative.</p>
+                </div>
+
+                <div class="mt-12 grid gap-12 lg:grid-cols-2">
+                    <div class="bg-gray-50 p-8 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold text-center text-green-700">A St. Patrick's Day Miracle</h3>
+                        <p class="text-center text-gray-500 mb-6">Sabina Park, Jamaica</p>
+                        <div class="flex justify-around items-center">
+                            <div class="text-center">
+                                <p class="text-lg font-semibold">Pakistan</p>
+                                <p class="text-4xl font-bold text-gray-800">132</p>
+                                <p class="text-sm text-gray-500">All Out (45.4 overs)</p>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-400">vs</div>
+                            <div class="text-center">
+                                <p class="text-lg font-semibold text-green-700">Ireland</p>
+                                <p class="text-4xl font-bold text-green-700">133/7</p>
+                                <p class="text-sm text-gray-500">(41.4 overs)</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <p class="text-gray-600"><strong class="text-gray-800">Result:</strong> Ireland won by 3 wickets.</p>
+                            <p class="mt-2 text-gray-600"><strong class="text-gray-800">Key Performer:</strong> Niall O'Brien (72 runs) anchored the chase with immense courage, guiding the debutants to one of the greatest upsets in World Cup history.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-8 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold text-center text-emerald-700">The Bengal Tigers' Ambush</h3>
+                        <p class="text-center text-gray-500 mb-6">Queen's Park Oval, Trinidad</p>
+                        <div class="flex justify-around items-center">
+                            <div class="text-center">
+                                <p class="text-lg font-semibold">India</p>
+                                <p class="text-4xl font-bold text-gray-800">191</p>
+                                <p class="text-sm text-gray-500">All Out (49.3 overs)</p>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-400">vs</div>
+                            <div class="text-center">
+                                <p class="text-lg font-semibold text-emerald-700">Bangladesh</p>
+                                <p class="text-4xl font-bold text-emerald-700">192/5</p>
+                                <p class="text-sm text-gray-500">(48.3 overs)</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <p class="text-gray-600"><strong class="text-gray-800">Result:</strong> Bangladesh won by 5 wickets.</p>
+                            <p class="mt-2 text-gray-600"><strong class="text-gray-800">Key Performer:</strong> Mashrafe Mortaza (4/38) led a spirited bowling attack that restricted India's star-studded lineup, setting the stage for a fearless chase led by young talents.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="records" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">Record Books Re-Written</h2>
+                    <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">The tournament was a statistical wonderland, with numerous long-standing individual and team records shattered. Click on a stat to learn more about these historic achievements.</p>
+                </div>
+                <div id="records-grid" class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+                </div>
+            </div>
+        </section>
+        
+        <section id="knockouts" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">The Knockout Gauntlet</h2>
+                    <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">After a long Super 8 stage, four teams emerged. The semi-finals were brutally one-sided, setting up a final showdown between the tournament's two most consistent sides.</p>
+                </div>
+                <div class="mt-12">
+                    <div class="flex flex-col md:flex-row justify-center items-center md:items-start space-y-8 md:space-y-0 md:space-x-8">
+                        <div class="w-full md:w-1/3 space-y-4">
+                            <div class="bg-gray-50 p-4 rounded-lg shadow-md text-center">
+                                <h4 class="font-bold">Semi-Final 1</h4>
+                                <p class="text-sm text-gray-500">Sri Lanka vs New Zealand</p>
+                                <p class="font-semibold mt-2">Sri Lanka won by 81 runs</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg shadow-md text-center">
+                                <h4 class="font-bold">Semi-Final 2</h4>
+                                <p class="text-sm text-gray-500">Australia vs South Africa</p>
+                                <p class="font-semibold mt-2">Australia won by 7 wickets</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-center text-gray-400 text-4xl font-thin h-full md:h-auto">
+                           <span class="hidden md:block">&rarr;</span>
+                           <span class="block md:hidden">&darr;</span>
+                        </div>
+                        <div class="w-full md:w-1/3 flex items-center">
+                            <div class="bg-amber-100 border-2 border-amber-500 p-6 rounded-lg shadow-xl text-center w-full">
+                                <h3 class="text-xl font-bold text-amber-800">FINAL</h3>
+                                <p class="text-md text-gray-600 mt-2">Australia vs Sri Lanka</p>
+                                <p class="font-bold text-xl mt-4">🏆 Australia</p>
+                                <p class="text-sm text-gray-500">won by 53 runs (D/L)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="legacy" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                 <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">The Long Shadow: Controversy & Legacy</h2>
+                    <p class="mt-4 text-lg text-gray-500 max-w-3xl mx-auto">Beyond the on-field action, the 2007 World Cup is remembered for the dark cloud of controversy and tragedy that enveloped it, leaving a legacy of painful but necessary lessons that reshaped the sport.</p>
+                </div>
+                <div class="mt-12 max-w-4xl mx-auto">
+                    <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-lg shadow-md">
+                        <h3 class="text-xl font-bold text-red-800">The Death of Bob Woolmer</h3>
+                        <p class="mt-2 text-gray-700">The tournament was irrevocably stained by tragedy when Pakistan's coach, Bob Woolmer, was found dead in his hotel room the day after his team's shocking elimination. An initial murder investigation plunged the World Cup into a state of crisis and grief. Though eventually ruled a death by natural causes, the event cast a dark shadow over the proceedings and highlighted the immense pressures of international cricket.</p>
+                    </div>
+                    <div class="mt-8 bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-r-lg shadow-md">
+                        <h3 class="text-xl font-bold text-yellow-800">A Tournament Under Fire</h3>
+                        <p class="mt-2 text-gray-700">The event was widely condemned for a range of organizational failures:</p>
+                        <ul class="mt-4 list-disc list-inside space-y-2 text-gray-600">
+                            <li><strong>Flawed Format:</strong> The short group stage led to the commercially disastrous early exit of India and Pakistan.</li>
+                            <li><strong>Fan Alienation:</strong> High ticket prices and a ban on traditional Caribbean musical instruments led to empty stadiums and a sterile atmosphere.</li>
+                            <li><strong>Logistical Blunders:</strong> Unfinished venues, poor practice facilities, and a farcical, confused ending to the final in near-darkness marred the event's credibility.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
+            <p>An interactive data visualization based on the 2007 ICC Cricket World Cup report.</p>
+            <p class="text-sm mt-2">Designed to explore the key narratives of a complex and historic tournament.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dynastyData = {
+                batting: {
+                    labels: ['Matthew Hayden', 'Ricky Ponting', 'Adam Gilchrist', 'Michael Clarke'],
+                    datasets: [{
+                        label: 'Runs Scored',
+                        data: [659, 539, 453, 436],
+                        backgroundColor: 'rgba(217, 119, 6, 0.7)',
+                        borderColor: 'rgba(217, 119, 6, 1)',
+                        borderWidth: 1
+                    }],
+                    info: {
+                        'Matthew Hayden': 'The tournament\'s top run-scorer with 659 runs, including three centuries. His aggressive opening set the tone for Australia\'s dominance.',
+                        'Ricky Ponting': 'The captain led from the front, scoring 539 runs and providing crucial stability to the middle order.',
+                        'Adam Gilchrist': 'Exploded in the final with a breathtaking 149 off 104 balls, the highest score ever in a World Cup final.',
+                        'Michael Clarke': 'Played several crucial innings, including an unbeaten 60 in the semi-final, finishing with 436 runs.'
+                    }
+                },
+                bowling: {
+                    labels: ['Glenn McGrath', 'Shaun Tait', 'Brad Hogg', 'Nathan Bracken'],
+                    datasets: [{
+                        label: 'Wickets Taken',
+                        data: [26, 23, 21, 16],
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    }],
+                    info: {
+                        'Glenn McGrath': 'Player of the Series. His 26 wickets set a new record for a single World Cup. His farewell tour was a masterclass in precision bowling.',
+                        'Shaun Tait': 'A revelation, terrorizing batsmen with raw pace to become the tournament\'s second-highest wicket-taker with 23 wickets.',
+                        'Brad Hogg': 'The wily leg-spinner was a crucial part of the attack, chipping in with 21 wickets and controlling the middle overs.',
+                        'Nathan Bracken': 'The skillful left-armer provided control and key breakthroughs, taking 16 wickets with an excellent economy rate.'
+                    }
+                }
+            };
+
+            const recordsData = [
+                {
+                    value: '6x6',
+                    label: 'Six Sixes in an Over',
+                    description: 'South Africa\'s Herschelle Gibbs became the first player in ODI history to hit six sixes in a single over, against the Netherlands.'
+                },
+                {
+                    value: '4-in-4',
+                    label: 'Four Wickets in Four Balls',
+                    description: 'Sri Lanka\'s Lasith Malinga achieved a unique feat, taking four wickets in four consecutive balls against South Africa.'
+                },
+                {
+                    value: '26',
+                    label: 'Most Wickets in a WC',
+                    description: 'Glenn McGrath set a new benchmark for the most wickets in a single tournament with 26 dismissals.'
+                },
+                {
+                    value: '149',
+                    label: 'Highest Score in a Final',
+                    description: 'Adam Gilchrist\'s stunning 149 against Sri Lanka is the highest individual score ever in a World Cup final.'
+                },
+                {
+                    value: '66',
+                    label: 'Fastest WC Hundred',
+                    description: 'Matthew Hayden set a then-record for the fastest World Cup century, reaching it in just 66 balls against South Africa.'
+                },
+                {
+                    value: '20',
+                    label: 'Fastest WC Fifty',
+                    description: 'New Zealand\'s Brendon McCullum blazed to the fastest fifty in World Cup history in just 20 balls against Canada.'
+                },
+                {
+                    value: '413',
+                    label: 'Highest Team Total',
+                    description: 'India scored 413/5 against Bermuda, the highest team total in World Cup history at the time.'
+                },
+                {
+                    value: '71',
+                    label: 'Most Career WC Wickets',
+                    description: 'Glenn McGrath surpassed Wasim Akram to become the all-time leading wicket-taker in World Cup history with 71 wickets.'
+                }
+            ];
+
+            const recordsGrid = document.getElementById('records-grid');
+            recordsData.forEach(record => {
+                const card = document.createElement('div');
+                card.className = 'stat-card bg-white p-6 rounded-lg shadow-md text-center cursor-pointer';
+                card.innerHTML = `
+                    <p class="text-4xl font-extrabold text-amber-600">${record.value}</p>
+                    <p class="mt-2 text-lg font-semibold text-gray-800">${record.label}</p>
+                    <p class="record-description hidden mt-2 text-gray-500 text-sm">${record.description}</p>
+                `;
+                recordsGrid.appendChild(card);
+
+                card.addEventListener('click', () => {
+                    const desc = card.querySelector('.record-description');
+                    const allDescs = recordsGrid.querySelectorAll('.record-description');
+                    
+                    allDescs.forEach(d => {
+                        if (d !== desc) {
+                            d.classList.add('hidden');
+                        }
+                    });
+                    desc.classList.toggle('hidden');
+                });
+            });
+
+            const ctx = document.getElementById('dynastyChart').getContext('2d');
+            let dynastyChart;
+
+            const playerInfoDiv = document.getElementById('player-info');
+
+            function createOrUpdateChart(data, info) {
+                if (dynastyChart) {
+                    dynastyChart.destroy();
+                }
+                dynastyChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(200, 200, 200, 0.2)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.parsed.y}`;
+                                    }
+                                }
+                            }
+                        },
+                        onClick: (e, elements) => {
+                            if (elements.length > 0) {
+                                const index = elements[0].index;
+                                const label = dynastyChart.data.labels[index];
+                                playerInfoDiv.innerHTML = `<strong class="text-gray-900">${label}:</strong> ${info[label]}`;
+                                playerInfoDiv.classList.remove('fade-in');
+                                void playerInfoDiv.offsetWidth;
+                                playerInfoDiv.classList.add('fade-in');
+                            }
+                        }
+                    }
+                });
+                const firstPlayer = Object.keys(info)[0];
+                playerInfoDiv.innerHTML = `<strong class="text-gray-900">${firstPlayer}:</strong> ${info[firstPlayer]}`;
+            }
+
+            const showBattingBtn = document.getElementById('show-batting');
+            const showBowlingBtn = document.getElementById('show-bowling');
+
+            showBattingBtn.addEventListener('click', () => {
+                createOrUpdateChart(dynastyData.batting, dynastyData.batting.info);
+                showBattingBtn.classList.add('bg-amber-600', 'text-white');
+                showBattingBtn.classList.remove('bg-gray-200', 'text-gray-800');
+                showBowlingBtn.classList.add('bg-gray-200', 'text-gray-800');
+                showBowlingBtn.classList.remove('bg-amber-600', 'text-white');
+            });
+
+            showBowlingBtn.addEventListener('click', () => {
+                createOrUpdateChart(dynastyData.bowling, dynastyData.bowling.info);
+                showBowlingBtn.classList.add('bg-amber-600', 'text-white');
+                showBowlingBtn.classList.remove('bg-gray-200', 'text-gray-800');
+                showBattingBtn.classList.add('bg-gray-200', 'text-gray-800');
+                showBattingBtn.classList.remove('bg-amber-600', 'text-white');
+            });
+
+            createOrUpdateChart(dynastyData.batting, dynastyData.batting.info);
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

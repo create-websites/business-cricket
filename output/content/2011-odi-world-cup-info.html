@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: The 2011 Cricket World Cup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Energetic & Playful (#00A0B0, #6A4A3C, #CC333F, #EB6841, #EDC951) -->
+    <!-- Application Structure Plan: The infographic follows a linear narrative, mirroring the chronological progression of the World Cup. It starts with a bold header and key tournament stats (the hook), moves into the group stage drama (highlighting upsets), visualizes the path through the knockouts, details the final showdown, and concludes with the tournament's legacy and key award winners. This structure was chosen to tell a clear, compelling story that is easy for any user to follow from start to finish on a single scrolling page. -->
+    <!-- Visualization & Content Choices: 
+        - Tournament Leaders (Runs/Wickets): Goal: Compare. Viz: Bar Chart (Chart.js). Justification: Bar charts are ideal for directly comparing the top performers' statistics, making it easy to see who dominated. NO SVG.
+        - Fastest Century: Goal: Inform. Viz: Single Big Number/Icon. Justification: A large, bold number for "50 balls" creates a high-impact focal point for this incredible record. NO SVG.
+        - Knockout Bracket: Goal: Organize. Viz: HTML/CSS with Tailwind. Justification: A flowchart built with HTML/CSS clearly and simply illustrates the path each team took to the final, which is more effective and compliant than using a complex library or forbidden graphics. NO SVG, NO MERMAID JS.
+        - Final Score Comparison: Goal: Compare. Viz: Donut Charts (Chart.js). Justification: Donut charts provide a quick, visual breakdown of the runs scored by key players versus the rest of the team in the final, highlighting the significance of their contributions. NO SVG.
+        - Yuvraj Singh's Performance: Goal: Inform. Viz: Pictograph (Unicode characters). Justification: Using simple Unicode icons for runs and wickets offers a visually engaging way to summarize his all-round contribution without resorting to SVG.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f7fafc;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        .knockout-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid #EB6841;
+        }
+        .winner {
+            border-left: 4px solid #00A0B0;
+            font-weight: 900;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-black uppercase" style="color: #CC333F;">A SUBCONTINENT'S ROAR</h1>
+            <p class="text-xl md:text-2xl font-light mt-2" style="color: #6A4A3C;">The Story of the 2011 ICC Cricket World Cup</p>
+        </header>
+
+        <section class="mb-16">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <p class="text-4xl md:text-5xl font-bold" style="color: #00A0B0;">14</p>
+                    <p class="text-sm font-semibold uppercase mt-2">Teams</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <p class="text-4xl md:text-5xl font-bold" style="color: #EB6841;">49</p>
+                    <p class="text-sm font-semibold uppercase mt-2">Matches</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <p class="text-4xl md:text-5xl font-bold" style="color: #00A0B0;">28</p>
+                    <p class="text-sm font-semibold uppercase mt-2">Year Wait Ended</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <p class="text-4xl md:text-5xl font-bold" style="color: #EB6841;">1st</p>
+                    <p class="text-sm font-semibold uppercase mt-2">Host to Win</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 uppercase" style="color: #6A4A3C;">Tournament Leaders</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold text-center mb-4">Most Runs</h3>
+                    <div class="chart-container">
+                        <canvas id="runsChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold text-center mb-4">Most Wickets</h3>
+                    <div class="chart-container">
+                        <canvas id="wicketsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 uppercase" style="color: #6A4A3C;">Group Stage Shockwaves</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <h3 class="text-xl font-bold mb-2" style="color: #CC333F;">THE BANGALORE UPSET</h3>
+                    <p class="mb-4">In one of the greatest upsets in history, Ireland chased down England's mammoth 327.</p>
+                    <div class="bg-gray-200 rounded-lg p-4">
+                        <p class="text-lg font-semibold">Kevin O'Brien's Record</p>
+                        <p class="text-6xl lg:text-8xl font-black my-2" style="color: #EB6841;">50</p>
+                        <p class="text-lg font-semibold">Balls for the Fastest World Cup Century</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <h3 class="text-xl font-bold mb-2" style="color: #00A0B0;">THE BENGALURU TIE</h3>
+                    <p class="mb-4">India and England played out a breathtaking tie, a sign of the high-scoring drama to come.</p>
+                    <div class="bg-gray-200 rounded-lg p-4 flex items-center justify-around">
+                        <div class="w-1/2">
+                            <p class="text-lg font-semibold">India</p>
+                            <p class="text-5xl font-black my-2" style="color: #EB6841;">338</p>
+                            <p class="text-sm">S. Tendulkar 120</p>
+                        </div>
+                        <div class="w-1/2">
+                            <p class="text-lg font-semibold">England</p>
+                            <p class="text-5xl font-black my-2" style="color: #EB6841;">338<span class="text-2xl">/8</span></p>
+                            <p class="text-sm">A. Strauss 158</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 uppercase" style="color: #6A4A3C;">Path to the Final</h2>
+            <div class="p-4 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-y-8 gap-x-4">
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-lg text-center uppercase">Quarter-Finals</h4>
+                        <div class="knockout-card winner">Pakistan def. West Indies</div>
+                        <div class="knockout-card winner">India def. Australia</div>
+                        <div class="knockout-card winner">New Zealand def. South Africa</div>
+                        <div class="knockout-card winner">Sri Lanka def. England</div>
+                    </div>
+                    <div class="space-y-16 mt-0 md:mt-16">
+                        <h4 class="font-bold text-lg text-center uppercase">Semi-Finals</h4>
+                        <div class="knockout-card winner">India def. Pakistan</div>
+                        <div class="knockout-card winner">Sri Lanka def. New Zealand</div>
+                    </div>
+                    <div class="mt-0 md:mt-40">
+                        <h4 class="font-bold text-lg text-center uppercase">Final</h4>
+                        <div class="knockout-card winner text-xl py-4" style="border-color: #EDC951; background-color: #fffbeb;">India</div>
+                    </div>
+                </div>
+                 <p class="text-center mt-8 text-sm text-gray-500">India's quarter-final victory ended Australia's remarkable 12-year reign as world champions.</p>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 uppercase" style="color: #6A4A3C;">The Final Showdown: India vs Sri Lanka</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold text-center mb-4" style="color: #00A0B0;">Sri Lanka's Innings: 274/6</h3>
+                    <p class="text-center text-sm mb-4">A sublime century from Mahela Jayawardene (103*) set a challenging target.</p>
+                    <div class="chart-container" style="height: 250px; max-height: 250px;">
+                        <canvas id="slFinalChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold text-center mb-4" style="color: #CC333F;">India's Chase: 277/4</h3>
+                    <p class="text-center text-sm mb-4">After early blows, Gambhir (97) and Dhoni (91*) led India to a historic victory.</p>
+                    <div class="chart-container" style="height: 250px; max-height: 250px;">
+                        <canvas id="indFinalChart"></canvas>
+                    </div>
+                </div>
+            </div>
+             <div class="text-center mt-8 bg-white rounded-lg shadow-md p-6">
+                 <h3 class="text-xl font-bold mb-2" style="color: #EB6841;">The Winning Shot</h3>
+                 <p class="text-lg">MS Dhoni sealed the World Cup with an iconic six, a moment etched into cricket history.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-3xl font-bold text-center mb-8 uppercase" style="color: #6A4A3C;">Tournament Legacy</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6 text-center md:col-span-2">
+                    <h3 class="text-xl font-bold mb-2" style="color: #00A0B0;">Player of the Tournament</h3>
+                    <p class="text-3xl font-black" style="color: #EB6841;">Yuvraj Singh</p>
+                    <p class="text-gray-600 mb-4">An incredible all-round performance while battling illness.</p>
+                    <div class="flex justify-around items-center text-2xl font-bold p-4 bg-gray-200 rounded-lg">
+                        <div>
+                            <span class="text-4xl">🏏</span>
+                            <p>362 Runs</p>
+                        </div>
+                        <div>
+                            <span class="text-4xl">🔴</span>
+                            <p>15 Wickets</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold mb-4 text-center">Key Records</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><span class="text-xl mr-3" style="color: #EDC951;">🏆</span><span>First host nation to win the final.</span></li>
+                        <li class="flex items-start"><span class="text-xl mr-3" style="color: #EDC951;">🌏</span><span>First all-Asian World Cup final.</span></li>
+                        <li class="flex items-start"><span class="text-xl mr-3" style="color: #EDC951;">📈</span><span>Highest successful run chase in a final (275).</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const processLabel = (label) => {
+                if (label.length <= 16) return label;
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                for (const word of words) {
+                    if ((currentLine + word).length > 16) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                }
+                lines.push(currentLine.trim());
+                return lines;
+            };
+
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                  return label.join(' ');
+                } else {
+                  return label;
+                }
+            };
+
+            const baseChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#6A4A3C',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        displayColors: false,
+                        callbacks: {
+                            title: tooltipTitleCallback,
+                            label: (context) => `${context.raw}`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { font: { weight: 'bold' } },
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#e2e8f0' }
+                    }
+                }
+            };
+
+            const runsData = {
+                labels: ['T. Dilshan (SL)', 'S. Tendulkar (IND)', 'K. Sangakkara (SL)', 'G. Gambhir (IND)', 'V. Sehwag (IND)'].map(processLabel),
+                datasets: [{
+                    data: [500, 482, 465, 393, 380],
+                    backgroundColor: '#00A0B0',
+                }]
+            };
+            new Chart(document.getElementById('runsChart'), { type: 'bar', data: runsData, options: baseChartOptions });
+
+            const wicketsData = {
+                labels: ['Shahid Afridi (PAK)', 'Zaheer Khan (IND)', 'Tim Southee (NZ)', 'R. Peterson (SA)', 'M. Muralitharan (SL)'].map(processLabel),
+                datasets: [{
+                    data: [21, 21, 18, 15, 15],
+                    backgroundColor: '#EB6841',
+                }]
+            };
+            new Chart(document.getElementById('wicketsChart'), { type: 'bar', data: wicketsData, options: baseChartOptions });
+
+            const donutOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 12 } } },
+                    tooltip: {
+                        backgroundColor: '#6A4A3C',
+                        displayColors: false,
+                        callbacks: {
+                            title: tooltipTitleCallback,
+                            label: (context) => `Runs: ${context.raw}`
+                        }
+                    }
+                }
+            };
+
+            const slFinalData = {
+                labels: ['M. Jayawardene', 'K. Sangakkara', 'Other'],
+                datasets: [{
+                    data: [103, 48, 123],
+                    backgroundColor: ['#00A0B0', '#EDC951', '#e2e8f0'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            };
+            new Chart(document.getElementById('slFinalChart'), { type: 'doughnut', data: slFinalData, options: donutOptions });
+
+            const indFinalData = {
+                labels: ['G. Gambhir', 'MS Dhoni', 'Other'],
+                datasets: [{
+                    data: [97, 91, 89],
+                    backgroundColor: ['#CC333F', '#EB6841', '#e2e8f0'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            };
+            new Chart(document.getElementById('indFinalChart'), { type: 'doughnut', data: indFinalData, options: donutOptions });
+        });
+    </script>
+</body>
+</html>

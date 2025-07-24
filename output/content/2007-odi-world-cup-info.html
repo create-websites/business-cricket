@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: The 2007 Cricket World Cup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Energetic & Playful -->
+    <!-- Application Structure Plan: The infographic follows a clear narrative structure, guiding the user through the key stories of the 2007 World Cup. The flow is: 1. Hero Section: A bold, high-level summary. 2. Australia's Dominance: A deep dive into their perfect campaign with comparative data. 3. The Great Upsets: A dramatic showcase of the tournament's shocking results. 4. Record Breakers: A visually impactful section highlighting key statistical achievements. 5. Knockout Flow: A simple, clear diagram of the path to the final. This linear, story-driven structure is ideal for an infographic format, making the complex report information easy to follow and digest in a single scroll. -->
+    <!-- Visualization & Content Choices: 
+        - Australia's Top Performers: Report Info -> Hayden/McGrath stats. Goal -> Compare. Chosen Viz -> Bar Chart. Justification -> Best for direct comparison of individual stats. Library -> Chart.js on Canvas.
+        - Tournament Upsets: Report Info -> Ireland vs Pakistan & Bangladesh vs India match results. Goal -> Compare outcomes. Chosen Viz -> Styled HTML cards. Justification -> A direct visual comparison of scorecards is more impactful than a chart for this narrative. Method -> HTML/CSS.
+        - Key Records: Report Info -> List of records (6 sixes, 4-in-4, etc.). Goal -> Inform. Chosen Viz -> "Single Big Number" in cards. Justification -> Emphasizes the magnitude of each individual achievement. Method -> HTML/CSS.
+        - Knockout Stage: Report Info -> Semi-final and Final results. Goal -> Organize. Chosen Viz -> Flow Chart. Justification -> A visual bracket is the most intuitive way to show a tournament's knockout progression. Method -> HTML/CSS with flexbox.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FEFDFB;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 45vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+        .gradient-text {
+            background: linear-gradient(45deg, #FF4E50, #FC913A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto px-4 py-12 md:py-20">
+
+        <header class="text-center mb-16 md:mb-24">
+            <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tight">A Caribbean <span class="gradient-text">Crucible</span></h1>
+            <p class="mt-4 max-w-3xl mx-auto text-lg md:text-xl text-gray-600">The 2007 Cricket World Cup was a tournament of stark contrasts: one team's flawless perfection against a backdrop of shocking upsets, broken records, and off-field controversy.</p>
+        </header>
+
+        <section id="dominance" class="mb-16 md:mb-24">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-extrabold">The Untouchables: Australia's Perfect Run</h2>
+                <p class="mt-3 max-w-2xl mx-auto text-gray-600">Australia achieved an unprecedented third consecutive title, winning all 11 matches. Their campaign was a masterclass in total dominance, extending their unbeaten World Cup streak to 29 games.</p>
+            </div>
+
+            <div class="grid md:grid-cols-5 gap-8 items-center">
+                <div class="md:col-span-3 bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4 text-center">Architects of the Dynasty: Top Performers</h3>
+                    <div class="chart-container">
+                        <canvas id="performersChart"></canvas>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-4 text-center">The bar chart compares the tournament's leading run-scorer (Matthew Hayden) and wicket-taker (Glenn McGrath) against their next-best teammates, showcasing the depth of Australia's talent.</p>
+                </div>
+                <div class="md:col-span-2 space-y-6">
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                        <p class="text-6xl font-black gradient-text">100%</p>
+                        <p class="mt-2 font-bold text-lg">Win Rate</p>
+                        <p class="text-sm text-gray-600">11 Matches, 11 Victories</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                        <p class="text-6xl font-black gradient-text">29</p>
+                        <p class="mt-2 font-bold text-lg">Match Unbeaten Streak</p>
+                        <p class="text-sm text-gray-600">A record dating back to 1999</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="upsets" class="mb-16 md:mb-24">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-extrabold">The Day the Giants Fell</h2>
+                <p class="mt-3 max-w-2xl mx-auto text-gray-600">March 17, 2007, became one of the most chaotic days in cricket history, as two monumental upsets sent the subcontinent powerhouses of India and Pakistan crashing out of the tournament.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-2xl p-8 transform hover:scale-105 transition-transform duration-300">
+                    <h3 class="font-bold text-2xl text-center">A St. Patrick's Day Miracle</h3>
+                    <div class="flex justify-around items-center my-6">
+                        <div class="text-center">
+                            <p class="font-semibold text-lg">Pakistan</p>
+                            <p class="font-black text-5xl text-gray-400">132</p>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-400">vs</p>
+                        <div class="text-center">
+                            <p class="font-semibold text-lg text-green-600">Ireland</p>
+                            <p class="font-black text-5xl text-green-500">133/7</p>
+                        </div>
+                    </div>
+                    <p class="text-center text-gray-600">Debutants Ireland stunned the 4th-ranked team, chasing down the target in a tense thriller to knock Pakistan out.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-2xl p-8 transform hover:scale-105 transition-transform duration-300">
+                    <h3 class="font-bold text-2xl text-center">The Bengal Tigers' Ambush</h3>
+                    <div class="flex justify-around items-center my-6">
+                        <div class="text-center">
+                            <p class="font-semibold text-lg">India</p>
+                            <p class="font-black text-5xl text-gray-400">191</p>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-400">vs</p>
+                        <div class="text-center">
+                            <p class="font-semibold text-lg text-emerald-600">Bangladesh</p>
+                            <p class="font-black text-5xl text-emerald-500">192/5</p>
+                        </div>
+                    </div>
+                    <p class="text-center text-gray-600">Bangladesh's young stars fearlessly chased down the total to defeat their star-studded neighbors and seal India's fate.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="records" class="mb-16 md:mb-24">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-extrabold">Record Books Rewritten</h2>
+                <p class="mt-3 max-w-2xl mx-auto text-gray-600">The tournament was a statistical wonderland, with numerous individual and team records being shattered.</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <p class="text-5xl md:text-6xl font-black" style="color: #FF4E50;">6x6</p>
+                    <p class="mt-2 font-bold">Six Sixes in an Over</p>
+                    <p class="text-sm text-gray-600">Herschelle Gibbs (SA) became the first in ODI history.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <p class="text-5xl md:text-6xl font-black" style="color: #FC913A;">4-in-4</p>
+                    <p class="mt-2 font-bold">Wickets in Four Balls</p>
+                    <p class="text-sm text-gray-600">Lasith Malinga (SL) achieved the unique feat.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <p class="text-5xl md:text-6xl font-black" style="color: #F9D423;">26</p>
+                    <p class="mt-2 font-bold">Most Wickets in a WC</p>
+                    <p class="text-sm text-gray-600">Glenn McGrath (AUS) set a new tournament record.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <p class="text-5xl md:text-6xl font-black" style="color: #00A0B0;">149</p>
+                    <p class="mt-2 font-bold">Highest Score in a Final</p>
+                    <p class="text-sm text-gray-600">Adam Gilchrist's (AUS) match-winning knock.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="knockouts">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-extrabold">The Path to the Final</h2>
+                <p class="mt-3 max-w-2xl mx-auto text-gray-600">After a long Super 8 stage, the four best teams clashed in brutally one-sided semi-finals, setting up a blockbuster final.</p>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                <div class="w-full md:w-2/5 space-y-4">
+                    <div class="bg-white rounded-lg shadow-md p-4 text-center">
+                        <p class="font-bold">Semi-Final 1</p>
+                        <p class="text-sm text-gray-500">Sri Lanka beat New Zealand by 81 runs</p>
+                    </div>
+                     <div class="bg-white rounded-lg shadow-md p-4 text-center">
+                        <p class="font-bold">Semi-Final 2</p>
+                        <p class="text-sm text-gray-500">Australia beat South Africa by 7 wickets</p>
+                    </div>
+                </div>
+
+                <div class="text-5xl font-thin text-gray-400 transform md:rotate-0 rotate-90">&rarr;</div>
+
+                <div class="w-full md:w-2/5">
+                    <div class="bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-xl shadow-2xl p-6 text-center">
+                        <p class="font-black text-2xl">FINAL</p>
+                        <p class="mt-2">Australia vs Sri Lanka</p>
+                        <p class="mt-4 text-4xl font-black">🏆 AUSTRALIA</p>
+                        <p class="text-sm opacity-90">Won by 53 runs (D/L Method)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const wrapLabel = (label) => {
+            const maxLen = 16;
+            if (label.length <= maxLen) return label;
+            
+            const words = label.split(' ');
+            let lines = [];
+            let currentLine = '';
+            
+            words.forEach(word => {
+                if ((currentLine + ' ' + word).length > maxLen && currentLine.length > 0) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = currentLine ? currentLine + ' ' + word : word;
+                }
+            });
+            lines.push(currentLine);
+            return lines;
+        };
+
+        const performersData = {
+            labels: ['Matthew Hayden', 'Ricky Ponting', 'Glenn McGrath', 'Shaun Tait'],
+            datasets: [{
+                label: 'Runs Scored',
+                data: [659, 539, 0, 0],
+                backgroundColor: '#FF4E50',
+                barThickness: 25,
+            }, {
+                label: 'Wickets Taken',
+                data: [0, 0, 26, 23],
+                backgroundColor: '#FC913A',
+                barThickness: 25,
+            }]
+        };
+
+        const performersCtx = document.getElementById('performersChart').getContext('2d');
+        new Chart(performersCtx, {
+            type: 'bar',
+            data: performersData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        stacked: true,
+                        title: { display: true, text: 'Total Runs / Wickets' },
+                        grid: { display: false }
+                    },
+                    y: {
+                        stacked: true,
+                        grid: { color: 'rgba(0,0,0,0.05)'}
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

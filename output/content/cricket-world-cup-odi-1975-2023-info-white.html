@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket World Cup: An Infographic History</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Energetic & Playful -->
+    <!-- Application Structure Plan: The infographic tells a linear story of the Cricket World Cup. It starts with a bold hook—the number of champions—then moves chronologically through the different eras of dominance (West Indies, Australia) and key turning points (1983, 1992, 2011). It then transitions to a data-focused section on all-time records, followed by a thematic analysis of the game's evolution. This structure was chosen to first engage the user with headline facts, then provide historical context, and finally offer deeper analysis, making the complex history easy to follow in a single scroll. -->
+    <!-- Visualization & Content Choices: 
+        - Data Point: Number of titles per country. -> Goal: Compare. -> Chosen Visualization: Donut Chart (Chart.js). -> Justification: A donut chart provides a quick, visually appealing way to show the composition of champions and highlight Australia's dominance.
+        - Data Point: Timeline of Winners. -> Goal: Change. -> Chosen Visualization: Timeline (HTML/CSS). -> Justification: A visual timeline is the most intuitive way to show the chronological progression of winners and the start of different eras. NO SVG/Mermaid used.
+        - Data Point: All-time leading run-scorers/wicket-takers. -> Goal: Organize/Rank. -> Chosen Visualization: Horizontal Bar Charts (Chart.js). -> Justification: Horizontal bars are ideal for ranked lists, giving clear visual weight to the leaders and providing ample space for names and stats.
+        - Data Point: Evolution of the game (rules, clothing). -> Goal: Organize/Inform. -> Chosen Visualization: Flow Chart style diagram (HTML/CSS). -> Justification: A simple, styled HTML structure with arrows (Unicode) clearly illustrates the progression from traditional to modern cricket without needing complex graphics. NO SVG/Mermaid used.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #FFFFFF;
+            color: #1F2937;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .stat-card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #E5E7EB;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-12">
+
+        <header class="text-center mb-16">
+            <h1 class="text-5xl md:text-7xl font-black uppercase tracking-tighter" style="color: #FF4E50;">The Global Carnival</h1>
+            <p class="text-xl md:text-2xl font-light mt-2" style="color: #FC913A;">A Visual History of the Men's Cricket World Cup (1975-2023)</p>
+        </header>
+
+        <section id="champions" class="mb-20">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-bold" style="color: #F9D423;">Who Owns the Crown?</h2>
+                <p class="mt-2 text-lg text-gray-600 max-w-2xl mx-auto">Since 1975, only six nations have lifted the coveted trophy. The chart below shows the distribution of titles, highlighting an era of dominance by one particular powerhouse.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="stat-card">
+                    <div class="chart-container">
+                        <canvas id="winnersDonutChart"></canvas>
+                    </div>
+                </div>
+                <div class="text-left space-y-4">
+                    <div class="stat-card">
+                        <h3 class="text-2xl font-bold" style="color: #FF4E50;">Australia: The Juggernaut</h3>
+                        <p class="text-gray-700 mt-1">With <span class="text-5xl font-black" style="color: #F9D423;">6</span> titles, Australia has won more World Cups than any other nation, including a historic treble from 1999 to 2007.</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 class="text-2xl font-bold" style="color: #FF4E50;">The Two-Time Winners</h3>
+                        <p class="text-gray-700 mt-1">The West Indies (1975, 1979) and India (1983, 2011) are the only other nations to have won the tournament more than once.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="timeline" class="mb-20">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold" style="color: #F9D423;">A Timeline of Triumph</h2>
+                <p class="mt-2 text-lg text-gray-600 max-w-2xl mx-auto">From the traditional 60-over format in whites to the modern 50-over spectacle, the World Cup has seen distinct eras of dominance. This timeline tracks the champions through the years.</p>
+            </div>
+            <div class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:h-full before:w-0.5 before:bg-gray-200 md:before:mx-auto md:before:w-0.5">
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-lg font-bold text-gray-700 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">WI</div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] stat-card p-4">
+                        <h3 class="font-bold text-lg" style="color: #FF4E50;">1975 & 1979: The Caribbean Conquest</h3>
+                        <p class="text-sm text-gray-500">The West Indies, led by Clive Lloyd, established a dynasty with back-to-back wins, defining the early years with fearsome pace and powerful batting.</p>
+                    </div>
+                </div>
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-lg font-bold text-gray-700 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">IN</div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] stat-card p-4">
+                        <h3 class="font-bold text-lg" style="color: #FF4E50;">1983: The Upset of the Century</h3>
+                        <p class="text-sm text-gray-500">India, as 66-1 underdogs, defeated the mighty West Indies, an event that shifted cricket's center of gravity eastward forever.</p>
+                    </div>
+                </div>
+                 <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-lg font-bold text-gray-700 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">AU</div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] stat-card p-4">
+                        <h3 class="font-bold text-lg" style="color: #FF4E50;">1987 & 1999-2007: The Australian Era</h3>
+                        <p class="text-sm text-gray-500">Australia's journey began in 1987, but their golden era was a ruthless run of three consecutive titles, establishing one of sport's great dynasties.</p>
+                    </div>
+                </div>
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-lg font-bold text-gray-700 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">PK/SL</div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] stat-card p-4">
+                        <h3 class="font-bold text-lg" style="color: #FF4E50;">1992 & 1996: Subcontinent Revolution</h3>
+                        <p class="text-sm text-gray-500">Pakistan's "cornered tigers" won in 1992, followed by Sri Lanka's tactical revolution in 1996, showcasing the subcontinent's rising power.</p>
+                    </div>
+                </div>
+                 <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-lg font-bold text-gray-700 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">IN/AU/EN</div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] stat-card p-4">
+                        <h3 class="font-bold text-lg" style="color: #FF4E50;">2011-2019: The Home Advantage</h3>
+                        <p class="text-sm text-gray-500">A new trend emerged as India (2011), Australia (2015), and England (2019) all lifted the trophy on home soil, breaking a long-standing jinx.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="records" class="mb-20">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-bold" style="color: #F9D423;">Titans of the Tournament</h2>
+                <p class="mt-2 text-lg text-gray-600 max-w-2xl mx-auto">The World Cup is where legends are forged. These charts showcase the all-time leaders in runs and wickets, individuals who consistently performed on the biggest stage.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="stat-card">
+                    <h3 class="text-2xl font-semibold text-center mb-4" style="color: #FF4E50;">All-Time Leading Run Scorers</h3>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="topRunScorersChart"></canvas>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-2xl font-semibold text-center mb-4" style="color: #FF4E50;">All-Time Leading Wicket Takers</h3>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="topWicketTakersChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="evolution" class="mb-20">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-bold" style="color: #F9D423;">How the Game Changed</h2>
+                <p class="mt-2 text-lg text-gray-600 max-w-2xl mx-auto">The World Cup has been the crucible for ODI cricket's evolution. From aesthetics to strategy, the tournament has driven massive transformations.</p>
+            </div>
+            <div class="stat-card p-8">
+                <div class="flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0 md:space-x-8">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold" style="color: #FF4E50;">The Past</h3>
+                        <p class="text-5xl my-2">⚪</p>
+                        <p class="font-semibold">Traditional Whites</p>
+                        <p class="font-semibold">Red Ball</p>
+                        <p class="font-semibold">60 Overs</p>
+                    </div>
+                    <div class="text-5xl font-black text-gray-400 transform rotate-90 md:rotate-0">→</div>
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold" style="color: #FF4E50;">The 1992 Revolution</h3>
+                        <p class="text-5xl my-2">🌈</p>
+                        <p class="font-semibold">Coloured Clothing</p>
+                        <p class="font-semibold">White Balls</p>
+                        <p class="font-semibold">Day-Night Matches</p>
+                    </div>
+                     <div class="text-5xl font-black text-gray-400 transform rotate-90 md:rotate-0">→</div>
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold" style="color: #FF4E50;">The Modern Game</h3>
+                        <p class="text-5xl my-2">🎯</p>
+                        <p class="font-semibold">Powerplays & DRS</p>
+                        <p class="font-semibold">Two New Balls</p>
+                        <p class="font-semibold">50 Overs</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center mt-16 pt-8 border-t border-gray-200">
+            <p class="text-gray-500">Infographic based on "The Global Carnival: A Definitive History of the Men's Cricket World Cup, 1975-2023".</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const wrapLabel = (label) => {
+            const words = label.split(' ');
+            let line = '';
+            const lines = [];
+            for (let i = 0; i < words.length; i++) {
+                const testLine = line + words[i] + ' ';
+                if (testLine.length > 16 && i > 0) {
+                    lines.push(line.trim());
+                    line = words[i] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line.trim());
+            return lines;
+        };
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+
+        const chartColors = {
+            'Australia': '#FF4E50',
+            'West Indies': '#FC913A',
+            'India': '#F9D423',
+            'Pakistan': '#47B39C',
+            'Sri Lanka': '#348AA7',
+            'England': '#525174',
+        };
+
+        const winnersData = {
+            'Australia': 6,
+            'West Indies': 2,
+            'India': 2,
+            'Pakistan': 1,
+            'Sri Lanka': 1,
+            'England': 1,
+        };
+
+        new Chart(document.getElementById('winnersDonutChart'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(winnersData),
+                datasets: [{
+                    label: 'World Cup Titles',
+                    data: Object.values(winnersData),
+                    backgroundColor: Object.keys(winnersData).map(country => chartColors[country]),
+                    borderColor: '#FFFFFF',
+                    borderWidth: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#374151',
+                            font: { size: 14 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: { title: tooltipTitleCallback }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+
+        const topRunScorersData = [
+            { player: 'Sachin Tendulkar (IND)', runs: 2278 },
+            { player: 'Virat Kohli (IND)', runs: 1795 },
+            { player: 'Ricky Ponting (AUS)', runs: 1743 },
+            { player: 'Rohit Sharma (IND)', runs: 1575 },
+            { player: 'Kumar Sangakkara (SL)', runs: 1532 },
+        ];
+
+        new Chart(document.getElementById('topRunScorersChart'), {
+            type: 'bar',
+            data: {
+                labels: topRunScorersData.map(d => wrapLabel(d.player)),
+                datasets: [{
+                    label: 'Total Runs',
+                    data: topRunScorersData.map(d => d.runs),
+                    backgroundColor: '#FC913A',
+                    borderColor: '#F9D423',
+                    borderWidth: 2,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { title: tooltipTitleCallback } }
+                },
+                scales: {
+                    y: { ticks: { color: '#374151' } },
+                    x: { ticks: { color: '#374151' } }
+                }
+            }
+        });
+
+        const topWicketTakersData = [
+            { player: 'Glenn McGrath (AUS)', wickets: 71 },
+            { player: 'Muttiah Muralitharan (SL)', wickets: 68 },
+            { player: 'Mitchell Starc (AUS)', wickets: 65 },
+            { player: 'Lasith Malinga (SL)', wickets: 56 },
+            { player: 'Wasim Akram (PAK)', wickets: 55 },
+        ];
+
+        new Chart(document.getElementById('topWicketTakersChart'), {
+            type: 'bar',
+            data: {
+                labels: topWicketTakersData.map(d => wrapLabel(d.player)),
+                datasets: [{
+                    label: 'Total Wickets',
+                    data: topWicketTakersData.map(d => d.wickets),
+                    backgroundColor: '#47B39C',
+                    borderColor: '#348AA7',
+                    borderWidth: 2,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { title: tooltipTitleCallback } }
+                },
+                scales: {
+                    y: { ticks: { color: '#374151' } },
+                    x: { ticks: { color: '#374151' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

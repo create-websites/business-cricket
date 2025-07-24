@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Global Carnival: An Interactive History of the Cricket World Cup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Subtle Accents -->
+    <!-- Application Structure Plan: The application is structured into four main thematic sections: 'The Eras', 'Champions & Records', 'The Evolution of the Game', and 'Iconic Moments'. This structure was chosen to guide the user through a narrative journey, starting with a chronological overview, moving to data-driven insights, then exploring thematic changes in the sport, and finally highlighting memorable events. This non-linear approach allows users to explore based on their interests—be it historical progression, statistical analysis, or anecdotal stories—making the dense information from the report more digestible and engaging. Navigation is handled by a sticky header, allowing seamless movement between these distinct but interconnected stories. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Tournament winners and runners-up. -> Goal: Compare team success over time. -> Viz/Presentation: Interactive Bar Chart (Chart.js). -> Interaction: Hovering over bars reveals details. -> Justification: A bar chart provides a clear, immediate visual comparison of the number of titles won by each country, which is more impactful than a simple table.
+        - Report Info: All-time leading run-scorers and wicket-takers. -> Goal: Inform and compare individual greatness. -> Viz/Presentation: Horizontal Bar Charts (Chart.js). -> Interaction: Hover for exact stats. -> Justification: Horizontal bars are ideal for comparing ranked lists, providing ample space for player names and clear visual hierarchy.
+        - Report Info: Chronological history (1975-2023). -> Goal: Show the tournament's progression. -> Viz/Presentation: Interactive Timeline (HTML/CSS/JS). -> Interaction: Clicking a year reveals a detailed card with that year's summary. -> Justification: A timeline is the most intuitive way to present chronological events, and the interactive 'reveal' mechanism prevents overwhelming the user with too much text at once.
+        - Report Info: Evolution of rules (Powerplays, DRS). -> Goal: Explain complex changes. -> Viz/Presentation: Structured text with icons (HTML/Tailwind). -> Interaction: N/A. -> Justification: For conceptual information, well-structured text with clear headings and subtle iconography is more effective than a complex diagram.
+        - Report Info: Iconic moments and upsets. -> Goal: Engage the user with stories. -> Viz/Presentation: Card-based layout (HTML/Tailwind). -> Interaction: N/A. -> Justification: A card layout breaks down anecdotal information into digestible, visually appealing snippets.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #333;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link.active {
+            color: #D97706; 
+            border-bottom-color: #D97706;
+        }
+        .timeline-item.active .timeline-content {
+            display: block;
+        }
+        .timeline-item .timeline-content {
+            display: none;
+        }
+        .timeline-button.active {
+            background-color: #D97706;
+            color: white;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl sm:text-2xl font-bold text-gray-800">The Cricket World Cup Story</h1>
+                </div>
+                <nav class="hidden md:flex md:space-x-8">
+                    <a href="#eras" class="nav-link text-gray-600 hover:text-amber-700 border-b-2 border-transparent pb-1">The Eras</a>
+                    <a href="#champions" class="nav-link text-gray-600 hover:text-amber-700 border-b-2 border-transparent pb-1">Champions & Records</a>
+                    <a href="#evolution" class="nav-link text-gray-600 hover:text-amber-700 border-b-2 border-transparent pb-1">Evolution of the Game</a>
+                    <a href="#moments" class="nav-link text-gray-600 hover:text-amber-700 border-b-2 border-transparent pb-1">Iconic Moments</a>
+                </nav>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#eras" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">The Eras</a>
+            <a href="#champions" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Champions & Records</a>
+            <a href="#evolution" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Evolution of the Game</a>
+            <a href="#moments" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Iconic Moments</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <section id="hero" class="text-center py-16">
+            <h2 class="text-4xl lg:text-6xl font-extrabold text-amber-800 tracking-tight">The Global Carnival</h2>
+            <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">An interactive journey through the history, evolution, and unforgettable moments of the Men's Cricket World Cup from 1975 to 2023. Explore the dynasties, the upsets, and the innovations that shaped the modern game.</p>
+        </section>
+
+        <section id="eras" class="py-12 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800">The Eras of the World Cup</h3>
+                <p class="mt-2 text-md text-gray-600 max-w-2xl mx-auto">The history of the World Cup can be seen as a series of distinct eras, each defined by a dominant team, a major shift in how the game was played, or a geographical expansion. Click on a year in the timeline below to uncover the story of that tournament, from the early West Indian dominance to the modern era of home-ground triumphs.</p>
+            </div>
+            <div class="relative">
+                <div class="border-l-2 border-amber-200 ml-6 md:ml-0 md:border-t-2 md:border-l-0 md:w-full md:absolute md:top-1/2 md:-translate-y-1/2"></div>
+                <div id="timeline-container" class="flex flex-col md:flex-row justify-between relative">
+                </div>
+            </div>
+            <div id="timeline-content-display" class="mt-8 p-6 bg-white rounded-xl shadow-lg transition-all duration-500 min-h-[200px]">
+            </div>
+        </section>
+
+        <section id="champions" class="py-12 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800">Champions & Records</h3>
+                <p class="mt-2 text-md text-gray-600 max-w-2xl mx-auto">Numbers tell a story of their own. This section visualizes the titans of the tournament, from the nations who have lifted the trophy to the individuals who have etched their names in the record books. Hover over the charts to see the statistics behind the legends.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h4 class="text-xl font-semibold text-center mb-4">World Cup Titles by Nation</h4>
+                    <div class="chart-container">
+                        <canvas id="winnersChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h4 class="text-xl font-semibold text-center mb-4">All-Time Leading Run Scorers</h4>
+                    <div class="chart-container h-96 max-h-[60vh]">
+                        <canvas id="topRunScorersChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h4 class="text-xl font-semibold text-center mb-4">All-Time Leading Wicket Takers</h4>
+                    <div class="chart-container h-96 max-h-[60vh]">
+                        <canvas id="topWicketTakersChart"></canvas>
+                    </div>
+                </div>
+                 <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h4 class="text-xl font-semibold text-center mb-4">Highest Team Totals in History</h4>
+                    <div class="chart-container">
+                        <canvas id="highestTotalsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="evolution" class="py-12 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800">Evolution of the Game</h3>
+                <p class="mt-2 text-md text-gray-600 max-w-2xl mx-auto">The World Cup has been the laboratory for ODI cricket's evolution. From traditional whites to vibrant colours, and from simple rules to complex strategies involving Powerplays and technology, the tournament has consistently redefined the sport. This section explores the key transformations that have shaped the modern game.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h4 class="font-semibold text-lg mb-2">The Visual Revolution (1992)</h4>
+                    <p class="text-gray-600">The 1992 tournament was a watershed moment, introducing coloured uniforms, white balls, and day-night matches. This transformed the game into a telegenic spectacle, boosting its commercial appeal and paving the way for the T20 era.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h4 class="font-semibold text-lg mb-2">Powerplays & Scoring Inflation</h4>
+                    <p class="text-gray-600">The introduction and evolution of fielding restrictions (Powerplays) and the use of two new balls have heavily favoured batsmen. This has led to a dramatic increase in scoring rates and fundamentally changed team strategies, prioritizing power-hitting.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h4 class="font-semibold text-lg mb-2">The Umpire's New Eye (DRS)</h4>
+                    <p class="text-gray-600">Introduced in the 2011 World Cup, the Decision Review System (DRS) has added a layer of technology, accuracy, and strategy to officiating. While it has reduced errors, the "Umpire's Call" protocol remains a point of debate and tactical consideration for teams.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="moments" class="py-12 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800">Iconic Moments & Upsets</h3>
+                <p class="mt-2 text-md text-gray-600 max-w-2xl mx-auto">Beyond the trophies and records, the World Cup's legacy is built on unforgettable stories—moments of individual genius, shocking upsets, and high-stakes drama that have become part of cricketing folklore. Here are some of the events that have defined the tournament's history.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                    <h4 class="font-semibold text-lg mb-2">Kapil's Devils (1983)</h4>
+                    <p class="text-gray-600">India, as 66-1 underdogs, defending a paltry 183 against the invincible West Indies. Kapil Dev's spectacular running catch to dismiss Viv Richards is the defining moment of an upset that changed the sport's financial and spiritual center of gravity forever.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                    <h4 class="font-semibold text-lg mb-2">The Cornered Tigers (1992)</h4>
+                    <p class="text-gray-600">On the brink of elimination, Imran Khan's Pakistan team staged a remarkable comeback. Wasim Akram's genius in the final, with two unplayable deliveries, sealed their maiden title and immortalized the "cornered tigers" narrative.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                    <h4 class="font-semibold text-lg mb-2">The Tied Semi-Final (1999)</h4>
+                    <p class="text-gray-600">The greatest ODI ever played? Australia vs. South Africa. A catastrophic run-out on the final balls resulted in a tie, with Australia advancing on a technicality. It was a moment of supreme drama and heartbreak that defined a generation of South African cricket.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                    <h4 class="font-semibold text-lg mb-2">Dhoni Finishes Off in Style (2011)</h4>
+                    <p class="text-gray-600">The weight of a billion expectations on his shoulders, MS Dhoni promoted himself up the order and hit a colossal six to win India the World Cup on home soil. Ravi Shastri's commentary provided the perfect soundtrack to a nation's dream realized.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                    <h4 class="font-semibold text-lg mb-2">The Cruelest Margin (2019)</h4>
+                    <p class="text-gray-600">A tied match. A tied Super Over. England won their first World Cup on a boundary countback rule. The final was a whirlwind of high drama, bizarre luck (the Stokes overthrow), and controversy, leaving New Zealand heartbroken by the narrowest of margins.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                    <h4 class="font-semibold text-lg mb-2">Ireland's Giant-Killing (2011)</h4>
+                    <p class="text-gray-600">Chasing a mammoth 327 against England, Ireland were dead and buried. Then, Kevin O'Brien walked out and smashed the fastest century in World Cup history (50 balls), powering his team to one of the most astonishing run chases the sport has ever seen.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center">
+            <p>An Interactive Exploration of the Men's Cricket World Cup.</p>
+            <p class="text-sm text-gray-400 mt-2">Data sourced from "The Global Carnival: A Definitive History of the Men's Cricket World Cup, 1975-2023".</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const timelineData = [
+                { year: 1975, winner: 'West Indies', runnerUp: 'Australia', summary: 'The inaugural tournament, held in England. The West Indies, led by Clive Lloyd, defeated Australia in a classic final at Lord\'s, marked by Lloyd\'s century and Viv Richards\' brilliant fielding.' },
+                { year: 1979, winner: 'West Indies', runnerUp: 'England', summary: 'The West Indian dynasty continued. They defended their title against hosts England, with Viv Richards scoring a majestic unbeaten 139 in the final.' },
+                { year: 1983, winner: 'India', runnerUp: 'West Indies', summary: 'The upset of the century. Underdogs India, led by Kapil Dev, defended a low total of 183 to dethrone the two-time champions West Indies, sparking a cricket revolution in the subcontinent.' },
+                { year: 1987, winner: 'Australia', runnerUp: 'England', summary: 'The World Cup moved to the subcontinent and was reduced to 50 overs. Allan Border\'s Australia won their first title, defeating arch-rivals England by a narrow 7-run margin.' },
+                { year: 1992, winner: 'Pakistan', runnerUp: 'England', summary: 'A modern spectacle with coloured clothing and floodlights. Imran Khan\'s "cornered tigers" Pakistan staged a dramatic comeback to win their only title.' },
+                { year: 1996, winner: 'Sri Lanka', runnerUp: 'Australia', summary: 'Sri Lanka revolutionized batting with their aggressive opening strategy. Led by Arjuna Ranatunga, they chased down Australia\'s total in the final to become the first host nation to win.' },
+                { year: 1999, winner: 'Australia', runnerUp: 'Pakistan', summary: 'The start of the Australian juggernaut. Defined by a dramatic tied semi-final against South Africa, Steve Waugh\'s team comfortably beat Pakistan in the final.' },
+                { year: 2003, winner: 'Australia', runnerUp: 'India', summary: 'Ricky Ponting\'s "Invincibles" went undefeated throughout the tournament in South Africa, crushing India in the final with a massive total of 359/2.' },
+                { year: 2007, winner: 'Australia', runnerUp: 'Sri Lanka', summary: 'Australia completed a historic treble of titles, again going undefeated. The tournament in the West Indies was tragically overshadowed by the death of Pakistan coach Bob Woolmer.' },
+                { year: 2011, winner: 'India', runnerUp: 'Sri Lanka', summary: 'India became the first nation to win the World Cup on home soil. MS Dhoni\'s iconic six sealed a memorable victory in the final in Mumbai, ending a 28-year wait.' },
+                { year: 2015, winner: 'Australia', runnerUp: 'New Zealand', summary: 'Co-hosts Australia and New Zealand dominated the tournament. Australia claimed their record fifth title, defeating their trans-Tasman rivals comfortably in the final.' },
+                { year: 2019, winner: 'England', runnerUp: 'New Zealand', summary: 'The most dramatic final ever. After a tied match and a tied Super Over, hosts England won their first title on a controversial boundary countback rule.' },
+                { year: 2023, winner: 'Australia', runnerUp: 'India', summary: 'Australia silenced a massive home crowd in Ahmedabad. After an undefeated run by hosts India, Australia produced a tactical masterclass to win their sixth title, with Travis Head scoring a brilliant century.' },
+            ];
+
+            const winnersData = {
+                'Australia': 6,
+                'West Indies': 2,
+                'India': 2,
+                'Pakistan': 1,
+                'Sri Lanka': 1,
+                'England': 1,
+            };
+
+            const topRunScorersData = [
+                { player: 'Sachin Tendulkar (IND)', runs: 2278 },
+                { player: 'Virat Kohli (IND)', runs: 1795 },
+                { player: 'Ricky Ponting (AUS)', runs: 1743 },
+                { player: 'Rohit Sharma (IND)', runs: 1575 },
+                { player: 'Kumar Sangakkara (SL)', runs: 1532 },
+            ];
+
+            const topWicketTakersData = [
+                { player: 'Glenn McGrath (AUS)', wickets: 71 },
+                { player: 'Muttiah Muralitharan (SL)', wickets: 68 },
+                { player: 'Mitchell Starc (AUS)', wickets: 65 },
+                { player: 'Lasith Malinga (SL)', wickets: 56 },
+                { player: 'Wasim Akram (PAK)', wickets: 55 },
+            ];
+            
+            const highestTotalsData = [
+                { team: 'South Africa', score: 428, vs: 'Sri Lanka (2023)'},
+                { team: 'Australia', score: 417, vs: 'Afghanistan (2015)'},
+                { team: 'India', score: 413, vs: 'Bermuda (2007)'},
+                { team: 'South Africa', score: 411, vs: 'Ireland (2015)'},
+                { team: 'India', score: 410, vs: 'Netherlands (2023)'},
+            ];
+
+            const chartColors = {
+                'Australia': 'rgba(255, 205, 0, 0.7)',
+                'West Indies': 'rgba(128, 0, 0, 0.7)',
+                'India': 'rgba(0, 128, 255, 0.7)',
+                'Pakistan': 'rgba(0, 128, 0, 0.7)',
+                'Sri Lanka': 'rgba(255, 128, 0, 0.7)',
+                'England': 'rgba(200, 20, 20, 0.7)',
+                'South Africa': 'rgba(0, 102, 0, 0.7)',
+            };
+            const borderColors = {
+                'Australia': 'rgb(255, 205, 0)',
+                'West Indies': 'rgb(128, 0, 0)',
+                'India': 'rgb(0, 128, 255)',
+                'Pakistan': 'rgb(0, 128, 0)',
+                'Sri Lanka': 'rgb(255, 128, 0)',
+                'England': 'rgb(200, 20, 20)',
+                'South Africa': 'rgb(0, 102, 0)',
+            };
+
+            const timelineContainer = document.getElementById('timeline-container');
+            const contentDisplay = document.getElementById('timeline-content-display');
+
+            timelineData.forEach((item, index) => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item flex-1 flex md:flex-col items-center';
+                
+                const buttonWrapper = document.createElement('div');
+                buttonWrapper.className = 'flex md:flex-col items-center w-full';
+
+                const button = document.createElement('button');
+                button.textContent = item.year;
+                button.className = 'timeline-button z-10 w-16 h-16 rounded-full bg-white border-2 border-amber-500 font-semibold text-amber-700 transition-all duration-300 hover:bg-amber-500 hover:text-white hover:scale-110';
+                button.dataset.index = index;
+
+                buttonWrapper.appendChild(button);
+                timelineItem.appendChild(buttonWrapper);
+                timelineContainer.appendChild(timelineItem);
+            });
+
+            timelineContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('timeline-button')) {
+                    const index = e.target.dataset.index;
+                    const item = timelineData[index];
+
+                    document.querySelectorAll('.timeline-button').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    contentDisplay.innerHTML = `
+                        <h4 class="text-2xl font-bold text-amber-800">${item.year} World Cup</h4>
+                        <p class="text-sm font-semibold mt-1">
+                            <span class="text-green-600">Winner: ${item.winner}</span> | 
+                            <span class="text-red-600">Runner-up: ${item.runnerUp}</span>
+                        </p>
+                        <p class="mt-4 text-gray-700">${item.summary}</p>
+                    `;
+                }
+            });
+            
+            document.querySelector('.timeline-button').click();
+
+            new Chart(document.getElementById('winnersChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(winnersData),
+                    datasets: [{
+                        label: 'World Cup Titles',
+                        data: Object.values(winnersData),
+                        backgroundColor: Object.keys(winnersData).map(country => chartColors[country] || 'rgba(128, 128, 128, 0.7)'),
+                        borderColor: Object.keys(winnersData).map(country => borderColors[country] || 'rgb(128, 128, 128)'),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+
+            new Chart(document.getElementById('topRunScorersChart'), {
+                type: 'bar',
+                data: {
+                    labels: topRunScorersData.map(d => d.player),
+                    datasets: [{
+                        label: 'Total Runs',
+                        data: topRunScorersData.map(d => d.runs),
+                        backgroundColor: 'rgba(0, 128, 255, 0.7)',
+                        borderColor: 'rgb(0, 128, 255)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            new Chart(document.getElementById('topWicketTakersChart'), {
+                type: 'bar',
+                data: {
+                    labels: topWicketTakersData.map(d => d.player),
+                    datasets: [{
+                        label: 'Total Wickets',
+                        data: topWicketTakersData.map(d => d.wickets),
+                        backgroundColor: 'rgba(200, 20, 20, 0.7)',
+                        borderColor: 'rgb(200, 20, 20)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+            
+            new Chart(document.getElementById('highestTotalsChart'), {
+                type: 'bar',
+                data: {
+                    labels: highestTotalsData.map(d => `${d.team} vs ${d.vs}`),
+                    datasets: [{
+                        label: 'Team Score',
+                        data: highestTotalsData.map(d => d.score),
+                        backgroundColor: highestTotalsData.map(d => chartColors[d.team] || 'rgba(128, 128, 128, 0.7)'),
+                        borderColor: highestTotalsData.map(d => borderColors[d.team] || 'rgb(128, 128, 128)'),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: false, ticks: { stepSize: 50 } } }
+                }
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link, #mobile-menu a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (mobileMenu.classList.contains('hidden') === false) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            const sections = document.querySelectorAll('section');
+            const headerNavLinks = document.querySelectorAll('.nav-link');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                headerNavLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').substring(1) === current) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

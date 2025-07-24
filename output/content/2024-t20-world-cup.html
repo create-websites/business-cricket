@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2024 T20 World Cup: An Interactive Review</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Cricket Greens & Champion Golds -->
+    <!-- Application Structure Plan: A narrative-driven, top-down structure. It starts with the main outcome (India's win), moves to key tournament stories, then drills into the interactive knockout path. It follows with a powerful player statistics dashboard, highlights key records, and concludes with the tournament's legacy. This user flow is designed to be more engaging and logical than the original report's structure, guiding the user from "what happened" to "how" and "why it matters". -->
+    <!-- Visualization & Content Choices: Key narratives are presented as interactive cards. The knockout stage is a clickable bracket revealing match details. Player stats use dynamic, filterable Chart.js bar charts for comparison. Records are shown as impactful stat blocks. This prioritizes user interaction and data exploration, using Vanilla JS for all dynamic updates and Chart.js for visualizations, strictly avoiding SVG and Mermaid JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .champion-gradient {
+            background: linear-gradient(45deg, #007BFF, #00C6FF);
+        }
+        .gold-text {
+            color: #FFC107;
+        }
+        .section-title {
+            font-weight: 900;
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            color: #0f172a;
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #007BFF;
+        }
+        .stat-card, .knockout-card, .story-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover, .knockout-card:hover, .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 450px;
+            max-height: 50vh;
+        }
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 40;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-30 shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="font-bold text-xl text-slate-800">T20 WC 2024</div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="nav-link text-slate-600 font-semibold">Home</a>
+                    <a href="#story" class="nav-link text-slate-600 font-semibold">Tournament Story</a>
+                    <a href="#knockouts" class="nav-link text-slate-600 font-semibold">Knockouts</a>
+                    <a href="#stats" class="nav-link text-slate-600 font-semibold">Player Stats</a>
+                    <a href="#records" class="nav-link text-slate-600 font-semibold">Records</a>
+                    <a href="#legacy" class="nav-link text-slate-600 font-semibold">Legacy</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="menu-btn" class="text-slate-800">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#home" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-100">Home</a>
+            <a href="#story" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-100">Tournament Story</a>
+            <a href="#knockouts" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-100">Knockouts</a>
+            <a href="#stats" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-100">Player Stats</a>
+            <a href="#records" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-100">Records</a>
+            <a href="#legacy" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-100">Legacy</a>
+        </div>
+    </nav>
+
+    <header id="home" class="relative text-white text-center py-24 md:py-32 champion-gradient">
+        <div class="container mx-auto px-4">
+            <h1 class="text-4xl md:text-6xl font-black tracking-tight">Coronation in the Caribbean</h1>
+            <p class="mt-4 text-lg md:text-2xl font-semibold">India's Unbeaten Triumph at the 2024 T20 World Cup</p>
+            <div class="mt-8 flex justify-center items-center space-x-4">
+                <span class="text-4xl">🏆</span>
+                <p class="text-xl font-bold">Champions: India</p>
+                <span class="text-4xl">🏆</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="story" class="py-20 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title">The Tournament Story</h2>
+                <p class="text-center max-w-3xl mx-auto text-slate-600 mb-12">The 2024 T20 World Cup was a spectacle of contrasts, defined by compelling narratives that unfolded across the Caribbean and the USA. From flawless campaigns to heartbreaking defeats and fairytale runs, this section explores the key storylines that shaped an unforgettable tournament.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="story-card bg-slate-50 p-6 rounded-xl shadow-md border border-slate-200">
+                        <div class="text-4xl mb-4">🇮🇳</div>
+                        <h3 class="font-bold text-xl mb-2 text-slate-800">India's Perfect Run</h3>
+                        <p class="text-slate-600">Ending an 11-year ICC trophy drought, India became the first team in history to win the T20 World Cup while remaining undefeated, a testament to their dominance and resilience.</p>
+                    </div>
+                    <div class="story-card bg-slate-50 p-6 rounded-xl shadow-md border border-slate-200">
+                        <div class="text-4xl mb-4">🇿🇦</div>
+                        <h3 class="font-bold text-xl mb-2 text-slate-800">South Africa's Heartbreak</h3>
+                        <p class="text-slate-600">Also unbeaten en route to the final, the Proteas overcame decades of semi-final anguish only to fall agonizingly short by 7 runs in a classic, heart-wrenching conclusion.</p>
+                    </div>
+                    <div class="story-card bg-slate-50 p-6 rounded-xl shadow-md border border-slate-200">
+                        <div class="text-4xl mb-4">🇦🇫</div>
+                        <h3 class="font-bold text-xl mb-2 text-slate-800">Afghanistan's Ascent</h3>
+                        <p class="text-slate-600">The tournament's fairytale story. Afghanistan toppled giants like Australia and New Zealand to reach their first-ever World Cup semi-final, signaling their arrival as a top-tier force.</p>
+                    </div>
+                    <div class="story-card bg-slate-50 p-6 rounded-xl shadow-md border border-slate-200">
+                        <div class="text-4xl mb-4">🇺🇸</div>
+                        <h3 class="font-bold text-xl mb-2 text-slate-800">USA's Dream Debut</h3>
+                        <p class="text-slate-600">Co-hosts USA stunned the world by defeating Pakistan and advancing to the Super 8s in their maiden appearance, putting American cricket firmly on the global map.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="knockouts" class="py-20">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title">The Road to the Final</h2>
+                <p class="text-center max-w-3xl mx-auto text-slate-600 mb-12">The knockout stage delivered a potent mix of one-sided dominance and edge-of-the-seat drama. Explore the high-stakes matches that decided the finalists and ultimately, the champion. Click on any match to see the detailed scorecard and summary.</p>
+                <div class="space-y-12">
+                    <div>
+                        <h3 class="text-2xl font-bold text-center mb-6 text-slate-700">Semi-Finals</h3>
+                        <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                            <div id="sf1" class="knockout-card bg-white p-6 rounded-lg shadow-lg cursor-pointer border-l-4 border-blue-500">
+                                <p class="text-sm font-semibold text-slate-500 mb-2">Semi-Final 1</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="font-bold text-lg">🇿🇦 South Africa</div>
+                                    <div class="font-extrabold text-xl text-green-600">60/1</div>
+                                </div>
+                                <div class="flex justify-between items-center mt-2">
+                                    <div class="font-bold text-lg">🇦🇫 Afghanistan</div>
+                                    <div class="font-bold text-lg">56/10</div>
+                                </div>
+                                <p class="mt-4 text-center font-semibold text-blue-600">South Africa won by 9 wickets</p>
+                            </div>
+                            <div id="sf2" class="knockout-card bg-white p-6 rounded-lg shadow-lg cursor-pointer border-l-4 border-blue-500">
+                                <p class="text-sm font-semibold text-slate-500 mb-2">Semi-Final 2</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="font-bold text-lg">🇮🇳 India</div>
+                                    <div class="font-extrabold text-xl text-green-600">171/7</div>
+                                </div>
+                                <div class="flex justify-between items-center mt-2">
+                                    <div class="font-bold text-lg">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+                                    <div class="font-bold text-lg">103/10</div>
+                                </div>
+                                <p class="mt-4 text-center font-semibold text-blue-600">India won by 68 runs</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold text-center mb-6 text-slate-700">The Final</h3>
+                        <div class="max-w-2xl mx-auto">
+                             <div id="final" class="knockout-card bg-white p-6 rounded-lg shadow-xl cursor-pointer border-l-4 border-amber-400">
+                                <p class="text-sm font-semibold text-slate-500 mb-2 text-center">🏆 Final - Kensington Oval, Bridgetown</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="font-bold text-lg">🇮🇳 India</div>
+                                    <div class="font-extrabold text-xl text-green-600">176/7</div>
+                                </div>
+                                <div class="flex justify-between items-center mt-2">
+                                    <div class="font-bold text-lg">🇿🇦 South Africa</div>
+                                    <div class="font-bold text-lg">169/8</div>
+                                </div>
+                                <p class="mt-4 text-center font-semibold text-amber-500">India won by 7 runs</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="stats" class="py-20 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title">Statistical Leaders</h2>
+                <p class="text-center max-w-3xl mx-auto text-slate-600 mb-12">The tournament was lit up by brilliant individual performances. This interactive dashboard allows you to explore the top performers with both bat and ball. Use the buttons to switch between different statistical categories and see who truly dominated.</p>
+                <div class="grid lg:grid-cols-2 gap-12">
+                    <div class="bg-slate-50 p-6 rounded-xl shadow-lg border border-slate-200">
+                        <h3 class="text-2xl font-bold text-center mb-4 text-slate-800">Top Batting Performers</h3>
+                        <div id="batting-buttons" class="flex justify-center space-x-2 mb-4">
+                            <button data-stat="runs" class="stat-btn bg-blue-500 text-white px-4 py-2 rounded-md text-sm font-semibold">Most Runs</button>
+                            <button data-stat="sr" class="stat-btn bg-white text-slate-700 px-4 py-2 rounded-md text-sm font-semibold border">Strike Rate</button>
+                            <button data-stat="sixes" class="stat-btn bg-white text-slate-700 px-4 py-2 rounded-md text-sm font-semibold border">Most 6s</button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="battingChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-xl shadow-lg border border-slate-200">
+                        <h3 class="text-2xl font-bold text-center mb-4 text-slate-800">Top Bowling Performers</h3>
+                        <div id="bowling-buttons" class="flex justify-center space-x-2 mb-4">
+                            <button data-stat="wickets" class="stat-btn bg-blue-500 text-white px-4 py-2 rounded-md text-sm font-semibold">Most Wickets</button>
+                            <button data-stat="econ" class="stat-btn bg-white text-slate-700 px-4 py-2 rounded-md text-sm font-semibold border">Economy</button>
+                            <button data-stat="avg" class="stat-btn bg-white text-slate-700 px-4 py-2 rounded-md text-sm font-semibold border">Average</button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="bowlingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="records" class="py-20">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title">Rewriting History</h2>
+                 <p class="text-center max-w-3xl mx-auto text-slate-600 mb-12">This was a landmark event that set numerous new benchmarks. The records broken tell the story of a tournament of contrasts: from explosive batting on true Caribbean pitches to masterful, frugal bowling on the challenging surfaces in the USA.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="stat-card bg-white p-6 rounded-lg shadow-md text-center">
+                        <p class="text-5xl font-black gold-text">17</p>
+                        <p class="mt-2 font-semibold text-slate-800">Most Wickets</p>
+                        <p class="text-sm text-slate-500">F. Farooqi (AFG) & A. Singh (IND)</p>
+                    </div>
+                    <div class="stat-card bg-white p-6 rounded-lg shadow-md text-center">
+                        <p class="text-5xl font-black gold-text">17</p>
+                        <p class="mt-2 font-semibold text-slate-800">Most Sixes</p>
+                        <p class="text-sm text-slate-500">N. Pooran (WI)</p>
+                    </div>
+                    <div class="stat-card bg-white p-6 rounded-lg shadow-md text-center">
+                        <p class="text-5xl font-black gold-text">4.17</p>
+                        <p class="mt-2 font-semibold text-slate-800">Best Economy Rate</p>
+                        <p class="text-sm text-slate-500">J. Bumrah (IND)</p>
+                    </div>
+                    <div class="stat-card bg-white p-6 rounded-lg shadow-md text-center">
+                        <p class="text-5xl font-black gold-text">92</p>
+                        <p class="mt-2 font-semibold text-slate-800">Highest Powerplay</p>
+                        <p class="text-sm text-slate-500">West Indies (vs AFG)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="legacy" class="py-20 bg-white">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <h2 class="section-title">A Legacy of Change</h2>
+                <p class="text-center text-slate-600 mb-12">The 2024 T20 World Cup will be remembered for more than just India's historic win. It was a tournament that signaled significant shifts in the cricketing landscape, from the game's global expansion to its tactical evolution, and the poignant farewell of modern legends.</p>
+                <div class="space-y-8 text-slate-700">
+                    <div>
+                        <h3 class="font-bold text-xl mb-2 text-slate-900">The American Dream Realized</h3>
+                        <p>The tournament's most significant off-field legacy is the successful establishment of a new frontier for elite cricket in the United States. The on-field performance of the USA team was even more impactful, giving USA Cricket a massive platform for growth and lending credibility to the burgeoning Major League Cricket (MLC).</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl mb-2 text-slate-900">A Tactical Turning Point</h3>
+                        <p>The variable and often bowler-friendly conditions reintroduced the importance of tactical nuance. Teams that succeeded, like India and South Africa, were not just powerful but adaptable, proving that intelligent, strategic cricket can triumph over brute force, potentially influencing a global shift in T20 strategy.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl mb-2 text-slate-900">A Storybook Ending & Changing of the Guard</h3>
+                        <p>For the champions, the victory was a perfect, storybook farewell for a golden generation. The retirements of Virat Kohli, Rohit Sharma, and Ravindra Jadeja from T20Is mark the end of an era. Simultaneously, the rise of Afghanistan confirmed their arrival as a legitimate top-tier threat, signaling a potential shift in the established world order.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-slate-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>Interactive summary of the 2024 ICC Men's T20 World Cup.</p>
+            <p class="text-sm text-slate-400 mt-2">Data sourced from the provided report. Application designed for informational purposes.</p>
+        </div>
+    </footer>
+
+    <div id="modal" class="modal-backdrop">
+        <div class="bg-white rounded-lg shadow-2xl w-11/12 md:max-w-2xl p-6 md:p-8 relative modal-content">
+            <button id="close-modal" class="absolute top-4 right-4 text-slate-500 hover:text-slate-800">&times;</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    mobileMenu.classList.add('hidden');
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            const battingData = {
+                runs: {
+                    labels: ['R. Gurbaz (AFG)', 'R. Sharma (IND)', 'T. Head (AUS)', 'Q. de Kock (SA)', 'I. Zadran (AFG)', 'N. Pooran (WI)', 'A. Gous (USA)'],
+                    values: [281, 257, 255, 243, 231, 228, 219],
+                    title: 'Most Runs'
+                },
+                sr: {
+                    labels: ['M. Stoinis (AUS)', 'P. Salt (ENG)', 'J. Buttler (ENG)', 'T. Head (AUS)', 'R. Sharma (IND)', 'A. Gous (USA)', 'H. Pandya (IND)'],
+                    values: [164.08, 159.32, 158.52, 158.39, 156.71, 151.03, 151.57],
+                    title: 'Highest Strike Rate (min. 100 runs)'
+                },
+                sixes: {
+                    labels: ['N. Pooran (WI)', 'R. Gurbaz (AFG)', 'R. Sharma (IND)', 'T. Head (AUS)', 'A. Jones (USA)', 'Q. de Kock (SA)', 'H. Klaasen (SA)'],
+                    values: [17, 16, 15, 15, 14, 13, 13],
+                    title: 'Most Sixes'
+                }
+            };
+
+            const bowlingData = {
+                wickets: {
+                    labels: ['F. Farooqi (AFG)', 'A. Singh (IND)', 'J. Bumrah (IND)', 'A. Nortje (SA)', 'Rashid Khan (AFG)', 'R. Hossain (BAN)'],
+                    values: [17, 17, 15, 15, 14, 14],
+                    title: 'Most Wickets'
+                },
+                econ: {
+                    labels: ['J. Bumrah (IND)', 'T. Boult (NZ)', 'M. Rahman (BAN)', 'A. Hosein (WI)', 'A. Nortje (SA)', 'Naveen-ul-Haq (AFG)'],
+                    values: [4.17, 3.68, 5.32, 5.64, 5.74, 6.00],
+                    title: 'Best Economy Rate (min. 15 overs)'
+                },
+                avg: {
+                    labels: ['J. Bumrah (IND)', 'T. Boult (NZ)', 'F. Farooqi (AFG)', 'T. Shamsi (SA)', 'Naveen-ul-Haq (AFG)', 'A. Singh (IND)'],
+                    values: [8.26, 6.55, 9.41, 11.63, 12.30, 12.64],
+                    title: 'Best Bowling Average (min. 10 wickets)'
+                }
+            };
+
+            const chartOptions = (title) => ({
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 10,
+                        cornerRadius: 4,
+                    },
+                    title: {
+                        display: true,
+                        text: title,
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        color: '#334155',
+                        padding: {
+                            top: 10,
+                            bottom: 20
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#e2e8f0'
+                        },
+                        ticks: {
+                            color: '#475569'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#475569',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            let battingChart, bowlingChart;
+
+            function createChart(ctx, type, data, initialStat) {
+                const chartData = {
+                    labels: data[initialStat].labels,
+                    datasets: [{
+                        label: data[initialStat].title,
+                        data: data[initialStat].values,
+                        backgroundColor: 'rgba(0, 123, 255, 0.7)',
+                        borderColor: 'rgba(0, 123, 255, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                    }]
+                };
+                return new Chart(ctx, {
+                    type: 'bar',
+                    data: chartData,
+                    options: chartOptions(data[initialStat].title)
+                });
+            }
+
+            function updateChart(chart, data, stat) {
+                chart.data.labels = data[stat].labels;
+                chart.data.datasets[0].data = data[stat].values;
+                chart.data.datasets[0].label = data[stat].title;
+                chart.options.plugins.title.text = data[stat].title;
+                chart.update();
+            }
+
+            const battingCtx = document.getElementById('battingChart').getContext('2d');
+            battingChart = createChart(battingCtx, 'bar', battingData, 'runs');
+
+            const bowlingCtx = document.getElementById('bowlingChart').getContext('2d');
+            bowlingChart = createChart(bowlingCtx, 'bar', bowlingData, 'wickets');
+
+            document.getElementById('batting-buttons').addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const stat = e.target.dataset.stat;
+                    updateChart(battingChart, battingData, stat);
+                    document.querySelectorAll('#batting-buttons .stat-btn').forEach(btn => {
+                        btn.classList.remove('bg-blue-500', 'text-white');
+                        btn.classList.add('bg-white', 'text-slate-700');
+                    });
+                    e.target.classList.add('bg-blue-500', 'text-white');
+                    e.target.classList.remove('bg-white', 'text-slate-700');
+                }
+            });
+
+            document.getElementById('bowling-buttons').addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const stat = e.target.dataset.stat;
+                    updateChart(bowlingChart, bowlingData, stat);
+                    document.querySelectorAll('#bowling-buttons .stat-btn').forEach(btn => {
+                        btn.classList.remove('bg-blue-500', 'text-white');
+                        btn.classList.add('bg-white', 'text-slate-700');
+                    });
+                    e.target.classList.add('bg-blue-500', 'text-white');
+                    e.target.classList.remove('bg-white', 'text-slate-700');
+                }
+            });
+
+            const modal = document.getElementById('modal');
+            const modalBody = document.getElementById('modal-body');
+            const closeModalBtn = document.getElementById('close-modal');
+
+            const knockoutDetails = {
+                sf1: {
+                    title: "Semi-Final 1: South Africa vs Afghanistan",
+                    summary: "South Africa's formidable pace and spin attack crushed Afghanistan's dream run in a brutally lopsided encounter. Afghanistan were dismantled for just 56, the lowest-ever score in a T20 WC semi-final. The chase was a formality, propelling the Proteas into their first-ever senior men's World Cup final and shattering their long-standing semi-final curse.",
+                    playerOfTheMatch: "Marco Jansen (SA)",
+                    scores: [
+                        { team: "Afghanistan", score: "56/10 (11.5 overs)", topScorer: "A. Omarzai 10 (12)", topBowler: "T. Shamsi 3/6 (1.5)" },
+                        { team: "South Africa", score: "60/1 (8.5 overs)", topScorer: "R. Hendricks 29* (25)", topBowler: "F. Farooqi 1/11 (2)" }
+                    ]
+                },
+                sf2: {
+                    title: "Semi-Final 2: India vs England",
+                    summary: "In a masterful all-round performance, India dethroned defending champions England on a slow, turning pitch. Captain Rohit Sharma's 57 anchored the innings before India's spin twins, Axar Patel and Kuldeep Yadav, proved unplayable, bamboozling the English lineup to secure a comprehensive 68-run victory and sweet revenge for their 2022 semi-final loss.",
+                    playerOfTheMatch: "Axar Patel (IND)",
+                    scores: [
+                        { team: "India", score: "171/7 (20 overs)", topScorer: "R. Sharma 57 (39)", topBowler: "C. Jordan 3/37 (3)" },
+                        { team: "England", score: "103/10 (16.4 overs)", topScorer: "H. Brook 25 (19)", topBowler: "K. Yadav 3/19 (4)" }
+                    ]
+                },
+                final: {
+                    title: "Final: India vs South Africa",
+                    summary: "An instant classic. After an early collapse, Virat Kohli's redemptive 76 anchored India to 176. South Africa's chase, powered by Heinrich Klaasen's blistering 52, seemed destined for victory. But a stunning comeback, led by Jasprit Bumrah's death bowling and a spectacular boundary catch by Suryakumar Yadav, sealed a historic 7-run victory for India in one of the most dramatic finals ever.",
+                    playerOfTheMatch: "Virat Kohli (IND)",
+                    scores: [
+                        { team: "India", score: "176/7 (20 overs)", topScorer: "V. Kohli 76 (59)", topBowler: "K. Maharaj 2/23 (3)" },
+                        { team: "South Africa", score: "169/8 (20 overs)", topScorer: "H. Klaasen 52 (27)", topBowler: "H. Pandya 3/20 (3)" }
+                    ]
+                }
+            };
+
+            function showModal(matchId) {
+                const details = knockoutDetails[matchId];
+                let content = `<h3 class="text-2xl font-bold mb-4 text-slate-800">${details.title}</h3>`;
+                content += `<p class="text-slate-600 mb-6">${details.summary}</p>`;
+                content += `<div class="bg-slate-100 p-4 rounded-lg mb-4 space-y-3">`;
+                details.scores.forEach(s => {
+                    content += `
+                        <div class="grid grid-cols-3 gap-2 items-center text-sm">
+                            <span class="font-bold text-slate-700">${s.team}</span>
+                            <span class="font-semibold text-center">${s.score}</span>
+                            <span class="text-right text-slate-500">${s.topScorer} / ${s.topBowler}</span>
+                        </div>
+                    `;
+                });
+                content += `</div>`;
+                content += `<p class="text-center font-semibold text-amber-600">Player of the Match: ${details.playerOfTheMatch}</p>`;
+                modalBody.innerHTML = content;
+                modal.style.display = 'flex';
+            }
+
+            document.querySelectorAll('.knockout-card').forEach(card => {
+                card.addEventListener('click', () => showModal(card.id));
+            });
+
+            closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

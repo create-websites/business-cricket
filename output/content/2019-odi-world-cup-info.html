@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: The 2019 Cricket World Cup - The Barest of Margins</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: A linear, scrolling narrative designed for storytelling. It starts with a hero section stating the winner and the core theme ("Barest of Margins"). It then flows through: 1) Key Tournament Stats (big numbers), 2) The Knockout Path (HTML/CSS flowchart), 3) Player Performance (Bar Charts for top batters/bowlers), 4) Defining Moments (HTML/CSS timeline), and 5) A deep dive into the Final's controversial conclusion (Donut chart for boundary count). This structure guides the user from a broad overview to specific, dramatic details, making the complex report data easily digestible in a single, engaging flow. -->
+    <!-- Visualization & Content Choices: Final Boundary Count (Goal: Inform/Compare) -> Donut Chart (Library: Chart.js) to visually emphasize the small difference in the controversial tie-breaker. Top Performers (Goal: Compare/Rank) -> Ordered Bar Charts (Library: Chart.js) as it's the best method to compare stats across multiple players. Knockout Path (Goal: Organize) -> HTML/CSS Flexbox Diagram to clearly show the progression from semi-finals to the final without using prohibited libraries. Key Matches (Goal: Change/Organize) -> Vertical HTML/CSS Timeline to present a chronological sequence of the tournament's most impactful events. All choices adhere to the NO SVG/Mermaid constraint and are selected to tell a clear, data-driven story. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .donut-chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+        }
+        .stat-card {
+            background-color: #003f5c;
+            color: white;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            left: -0.6rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            background-color: #ffa600;
+            border-radius: 9999px;
+            border: 4px solid #003f5c;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="text-center my-8 md:my-12">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-[#003f5c] tracking-tight">THE BAREST OF MARGINS</h1>
+            <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">An infographic of the 2019 ICC Cricket World Cup, a tournament defined by a four-year revolution and decided by the most dramatic final in history.</p>
+        </header>
+
+        <section class="my-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div class="stat-card p-6 rounded-2xl shadow-lg">
+                    <p class="text-2xl font-semibold uppercase tracking-wider">Winner</p>
+                    <p class="text-6xl font-extrabold mt-2">England</p>
+                    <p class="mt-2 font-medium">First ever Men's World Cup Title</p>
+                </div>
+                <div class="stat-card p-6 rounded-2xl shadow-lg">
+                    <p class="text-2xl font-semibold uppercase tracking-wider">Total Matches</p>
+                    <p class="text-6xl font-extrabold mt-2">48</p>
+                    <p class="mt-2 font-medium">10 Teams, 45 Group Games, 3 Knockouts</p>
+                </div>
+                <div class="stat-card p-6 rounded-2xl shadow-lg">
+                    <p class="text-2xl font-semibold uppercase tracking-wider">Player of the Tournament</p>
+                    <p class="text-5xl font-extrabold mt-2">Kane Williamson</p>
+                    <p class="mt-2 font-medium">578 Runs | 82.57 Average</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="my-16 md:my-20">
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl">
+                <h2 class="text-3xl font-bold text-center mb-8 text-[#003f5c]">The Path to the Final</h2>
+                <p class="text-center max-w-2xl mx-auto mb-10 text-gray-600">After a grueling 45-match group stage, four teams emerged. The knockout stage was a tale of two matches: a nail-biting upset and a brutal demolition, setting the stage for a historic final at Lord's.</p>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-8">
+                    <div class="text-center w-full md:w-1/3">
+                        <h3 class="font-bold text-lg text-[#7a5195]">Semi-Final 1</h3>
+                        <div class="mt-2 p-4 bg-gray-100 rounded-lg shadow-inner">
+                            <p class="font-semibold">India vs <span class="text-[#7a5195] font-bold">New Zealand</span></p>
+                            <p class="text-sm text-gray-600">New Zealand won by 18 runs</p>
+                        </div>
+                    </div>
+                    <div class="text-6xl font-thin text-gray-300 hidden md:block">→</div>
+                    <div class="text-center w-full md:w-1/3">
+                        <h3 class="font-bold text-2xl text-[#ef5675]">The Final</h3>
+                        <div class="mt-2 p-4 bg-[#ff764a]/10 rounded-lg shadow-inner border-2 border-[#ef5675]">
+                            <p class="font-semibold text-lg"><span class="text-[#ef5675] font-bold">England</span> vs <span class="text-[#ef5675] font-bold">New Zealand</span></p>
+                            <p class="text-sm text-gray-600">Match Tied (England won on boundary count)</p>
+                        </div>
+                    </div>
+                    <div class="text-6xl font-thin text-gray-300 hidden md:block">←</div>
+                    <div class="text-center w-full md:w-1/3">
+                        <h3 class="font-bold text-lg text-[#7a5195]">Semi-Final 2</h3>
+                        <div class="mt-2 p-4 bg-gray-100 rounded-lg shadow-inner">
+                            <p class="font-semibold">Australia vs <span class="text-[#7a5195] font-bold">England</span></p>
+                            <p class="text-sm text-gray-600">England won by 8 wickets</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="my-16 md:my-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#003f5c]">Titans of the Tournament</h2>
+            <p class="text-center max-w-2xl mx-auto mb-10 text-gray-600">The 2019 World Cup was illuminated by extraordinary individual performances. Rohit Sharma's record-breaking run haul and Mitchell Starc's lethal bowling set new benchmarks for excellence.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl">
+                    <h3 class="text-2xl font-bold mb-4 text-center text-[#003f5c]">Top Run Scorers</h3>
+                    <div class="chart-container">
+                        <canvas id="topRunScorersChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl">
+                    <h3 class="text-2xl font-bold mb-4 text-center text-[#003f5c]">Top Wicket Takers</h3>
+                    <div class="chart-container">
+                        <canvas id="topWicketTakersChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="my-16 md:my-20">
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl">
+                <h2 class="text-3xl font-bold text-center mb-2 text-[#003f5c]">Defining Encounters</h2>
+                <p class="text-center max-w-2xl mx-auto mb-10 text-gray-600">Beyond the final, the tournament was packed with pivotal matches that shifted momentum, caused major upsets, and provided unforgettable drama.</p>
+                <div class="relative border-l-4 border-[#003f5c] ml-4 md:ml-0 pl-8 space-y-12">
+                    <div class="timeline-item">
+                        <h4 class="text-xl font-bold text-[#7a5195]">The Early Shock: Pakistan def. England</h4>
+                        <p class="text-gray-600 mt-1">Despite centuries from Root and Buttler, the hosts were stunned by Pakistan's 348, proving England's path to glory would be fraught with danger.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="text-xl font-bold text-[#bc5090]">The Upset: Sri Lanka def. England</h4>
+                        <p class="text-gray-600 mt-1">Chasing a modest 233, England's aggressive batting crumbled against Lasith Malinga's genius, throwing their campaign into crisis and the tournament wide open.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="text-xl font-bold text-[#ef5675]">The Classic: New Zealand def. West Indies</h4>
+                        <p class="text-gray-600 mt-1">An all-time classic. Carlos Brathwaite's astonishing century took West Indies to the brink of an impossible win, only to be caught on the boundary in the final over.</p>
+                    </div>
+                     <div class="timeline-item">
+                        <h4 class="text-xl font-bold text-[#ff764a]">The Heartbreak: India def. Afghanistan</h4>
+                        <p class="text-gray-600 mt-1">Afghanistan pushed powerhouse India to the absolute limit, needing a final-over hat-trick from Mohammed Shami to be denied a famous victory by just 11 runs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="my-16 md:my-20">
+            <div class="bg-[#003f5c] text-white p-6 md:p-8 rounded-2xl shadow-xl">
+                <h2 class="text-3xl font-bold text-center mb-2">The Unbelievable Final</h2>
+                <p class="text-center max-w-3xl mx-auto mb-10 text-gray-300">After 100 overs and a Super Over, both teams were tied. The winner was decided by a controversial tie-breaker: the boundary countback rule. England were crowned champions for scoring more boundaries throughout the match.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-[#ffa600] mb-4">The Final Tie-Breaker</h3>
+                        <div class="donut-chart-container">
+                            <canvas id="boundaryCountChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="bg-white/10 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-[#ffa600]">1. The Scores Were Tied</h4>
+                            <p class="text-gray-300 mt-1">Both England and New Zealand scored exactly 241 runs in their 50 overs.</p>
+                        </div>
+                        <div class="bg-white/10 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-[#ffa600]">2. The Super Over Was Tied</h4>
+                            <p class="text-gray-300 mt-1">In the one-over eliminator, both teams scored exactly 15 runs.</p>
+                        </div>
+                        <div class="bg-white/10 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-[#ffa600]">3. Decided by Boundaries</h4>
+                            <p class="text-gray-300 mt-1">England won by scoring 26 boundaries (fours and sixes) to New Zealand's 17, a rule that was scrapped by the ICC after the tournament.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const wrapLabel = (label) => {
+        const maxLen = 16;
+        if (label.length <= maxLen) {
+            return label;
+        }
+        const words = label.split(' ');
+        let currentLine = '';
+        const lines = [];
+        for (const word of words) {
+            if ((currentLine + ' ' + word).length > maxLen) {
+                lines.push(currentLine);
+                currentLine = word;
+            } else {
+                currentLine += (currentLine ? ' ' : '') + word;
+            }
+        }
+        lines.push(currentLine);
+        return lines;
+    };
+
+    const tooltipTitleCallback = (tooltipItems) => {
+        const item = tooltipItems[0];
+        let label = item.chart.data.labels[item.dataIndex];
+        if (Array.isArray(label)) {
+            return label.join(' ');
+        }
+        return label;
+    };
+
+    const topRunScorers = {
+        labels: ['Rohit Sharma', 'David Warner', 'Shakib Al Hasan', 'Kane Williamson', 'Joe Root'],
+        data: [648, 647, 606, 578, 556]
+    };
+
+    const topWicketTakers = {
+        labels: ['Mitchell Starc', 'Lockie Ferguson', 'Jofra Archer', 'Mustafizur Rahman', 'Jasprit Bumrah'],
+        data: [27, 21, 20, 20, 18]
+    };
+
+    const boundaryData = {
+        labels: ['England Boundaries', 'New Zealand Boundaries'],
+        data: [26, 17]
+    };
+
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        scales: {
+            x: {
+                beginAtZero: true,
+                grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                ticks: { color: '#374c80', font: { weight: '600' } }
+            },
+            y: {
+                grid: { display: false },
+                ticks: { color: '#003f5c', font: { weight: '600', size: 14 } }
+            }
+        },
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#003f5c',
+                titleFont: { size: 16, weight: 'bold' },
+                bodyFont: { size: 14 },
+                displayColors: false,
+                callbacks: {
+                    title: tooltipTitleCallback,
+                    label: function(context) {
+                        return `${context.dataset.label}: ${context.raw}`;
+                    }
+                }
+            }
+        }
+    };
+
+    const runsCtx = document.getElementById('topRunScorersChart').getContext('2d');
+    new Chart(runsCtx, {
+        type: 'bar',
+        data: {
+            labels: topRunScorers.labels.map(wrapLabel),
+            datasets: [{
+                label: 'Runs',
+                data: topRunScorers.data,
+                backgroundColor: '#7a5195',
+            }]
+        },
+        options: chartOptions
+    });
+
+    const wicketsCtx = document.getElementById('topWicketTakersChart').getContext('2d');
+    new Chart(wicketsCtx, {
+        type: 'bar',
+        data: {
+            labels: topWicketTakers.labels.map(wrapLabel),
+            datasets: [{
+                label: 'Wickets',
+                data: topWicketTakers.data,
+                backgroundColor: '#ef5675',
+            }]
+        },
+        options: chartOptions
+    });
+
+    const boundaryCtx = document.getElementById('boundaryCountChart').getContext('2d');
+    new Chart(boundaryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: boundaryData.labels,
+            datasets: [{
+                label: 'Boundaries',
+                data: boundaryData.data,
+                backgroundColor: ['#ffa600', '#ff764a'],
+                borderColor: '#003f5c',
+                borderWidth: 4,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: 'white',
+                        font: { size: 14, weight: '600' }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#003f5c',
+                    titleFont: { size: 16, weight: 'bold' },
+                    bodyFont: { size: 14 },
+                    displayColors: true,
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+            }
+        }
+    });
+
+});
+</script>
+</body>
+</html>

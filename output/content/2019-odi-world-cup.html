@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The 2019 Cricket World Cup: An Interactive Retrospective</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A non-linear, dashboard-style SPA. The structure prioritizes user-led exploration over a linear report format. It starts with a hero section and sticky navigation (Tournament Journey, The Final, Star Performers, Legacy). 'Tournament Journey' uses interactive cards for key matches and a clickable table for team summaries. 'The Final' features a toggle-able scorecard and an interactive timeline of the dramatic climax. 'Star Performers' uses Chart.js for data visualization and spotlight cards. 'Legacy' provides concluding text blocks. This structure was chosen to make the dense information highly accessible and engaging, allowing users to dive into the data, the narrative, or specific moments as they please, enhancing usability and comprehension. -->
+    <!-- Visualization & Content Choices: Group Stage Table (Goal: Organize/Inform) -> Clickable HTML table rows to show team summaries (Method: JS). Knockout Path (Goal: Organize/Inform) -> HTML/CSS Flexbox diagram (Method: HTML/CSS). Final Scorecard (Goal: Inform/Compare) -> Toggleable HTML tables (Method: JS buttons). Final's Climax (Goal: Change/Inform) -> Interactive vertical timeline (Method: JS click events). Player Stats (Goal: Compare) -> Bar charts (Library: Chart.js) with hover tooltips. Star Players (Goal: Inform) -> HTML/CSS cards. This approach uses the best tool for each piece of information, focusing on interaction to break down complex data and narratives into digestible, user-controlled segments. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #334155;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #3B82F6;
+            border-bottom-color: #3B82F6;
+        }
+        .card-reveal {
+            transition: all 0.5s cubic-bezier(.25,.8,.25,1);
+            visibility: hidden;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .card-reveal.active {
+            visibility: visible;
+            opacity: 1;
+            max-height: 500px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            left: -0.6rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            background-color: #BFDBFE;
+            border-radius: 9999px;
+            border: 3px solid #60A5FA;
+        }
+        .timeline-item:hover::before {
+            background-color: #60A5FA;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl md:text-2xl font-bold text-slate-700">2019 World Cup: The Final Chapter</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#journey" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">Tournament Journey</a>
+                        <a href="#final" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">The Final</a>
+                        <a href="#performers" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">Star Performers</a>
+                        <a href="#legacy" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">Legacy</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-800">The Barest of Margins</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg md:text-xl text-slate-600">An interactive retrospective of the 2019 ICC Cricket World Cup, a tournament defined by a four-year revolution, nail-biting thrillers, and the most dramatic final in the history of the sport.</p>
+            </div>
+        </section>
+
+        <section id="journey" class="py-16 md:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-slate-800">The Tournament Journey</h3>
+                    <p class="mt-2 text-lg text-slate-600">From the grueling 45-match group stage to the high-pressure knockouts, trace the path to the final.</p>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg mb-12">
+                    <h4 class="text-2xl font-bold mb-4 text-slate-700">Group Stage: A War of Attrition</h4>
+                    <p class="mb-6 text-slate-600">Ten teams battled in a round-robin format for four semi-final spots. What began as a predictable procession for the favorites soon descended into a desperate scramble for survival, highlighted by stunning upsets and immense pressure. Click on a team to see a summary of their campaign.</p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Pos</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Team</th>
+                                    <th class="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Pld</th>
+                                    <th class="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">W</th>
+                                    <th class="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">L</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Pts</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">NRR</th>
+                                </tr>
+                            </thead>
+                            <tbody id="group-stage-table" class="bg-white divide-y divide-slate-200">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg mb-12">
+                    <h4 class="text-2xl font-bold mb-4 text-slate-700">Defining Encounters</h4>
+                     <p class="mb-6 text-slate-600">The group stage was littered with pivotal matches that shifted the tournament's momentum and provided unforgettable drama. Here are some of the most impactful clashes.</p>
+                    <div id="defining-matches" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg">
+                    <h4 class="text-2xl font-bold mb-6 text-center text-slate-700">Path to the Final</h4>
+                    <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-8">
+                        <div class="text-center">
+                            <h5 class="font-bold text-lg">Semi-Final 1</h5>
+                            <div class="mt-2 p-4 bg-slate-100 rounded-lg shadow">
+                                <p class="font-semibold">India vs <span class="text-blue-600 font-bold">New Zealand</span></p>
+                                <p class="text-sm text-slate-600">New Zealand won by 18 runs</p>
+                            </div>
+                        </div>
+                        <div class="text-5xl font-thin text-slate-400 hidden md:block">→</div>
+                        <div class="text-center">
+                            <h5 class="font-bold text-lg text-blue-600">Final</h5>
+                            <div class="mt-2 p-4 bg-blue-100 rounded-lg shadow-inner">
+                                <p class="font-semibold"><span class="text-blue-600 font-bold">England</span> vs <span class="text-blue-600 font-bold">New Zealand</span></p>
+                                <p class="text-sm text-slate-600">Match Tied (England won on boundary count)</p>
+                            </div>
+                        </div>
+                        <div class="text-5xl font-thin text-slate-400 hidden md:block">←</div>
+                        <div class="text-center">
+                            <h5 class="font-bold text-lg">Semi-Final 2</h5>
+                            <div class="mt-2 p-4 bg-slate-100 rounded-lg shadow">
+                                <p class="font-semibold">Australia vs <span class="text-blue-600 font-bold">England</span></p>
+                                <p class="text-sm text-slate-600">England won by 8 wickets</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="final" class="py-16 md:py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-slate-800">The Greatest Game</h3>
+                    <p class="mt-2 text-lg text-slate-600 max-w-3xl mx-auto">A final for the ages at Lord's. A match of unbearable tension, unbelievable luck, and a controversy that would change the rules of the game forever. Explore the key moments and the scorecard from the day England and New Zealand battled to a standstill.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-slate-50 p-6 rounded-2xl shadow-lg">
+                        <div class="flex justify-center mb-4 border-b border-slate-200">
+                            <button id="nz-btn" class="scorecard-btn active px-4 py-2 font-semibold text-slate-700">New Zealand Innings: 241/8</button>
+                            <button id="eng-btn" class="scorecard-btn px-4 py-2 font-semibold text-slate-500">England Innings: 241/10</button>
+                        </div>
+                        <div id="nz-scorecard" class="scorecard-content overflow-x-auto"></div>
+                        <div id="eng-scorecard" class="scorecard-content hidden overflow-x-auto"></div>
+                        <div class="mt-4 p-4 bg-blue-100 rounded-lg text-center">
+                            <h5 class="font-bold">Super Over</h5>
+                            <p class="text-slate-700">England: 15/0 | New Zealand: 15/1. Match Tied. England won on boundary countback (26-17).</p>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-1">
+                        <div class="bg-slate-50 p-6 rounded-2xl shadow-lg">
+                            <h4 class="text-xl font-bold mb-4 text-slate-700">The Unbelievable Climax</h4>
+                            <div id="final-timeline" class="relative border-l-2 border-slate-200 pl-6 space-y-8">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="performers" class="py-16 md:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-slate-800">Star Performers</h3>
+                    <p class="mt-2 text-lg text-slate-600">The individuals who lit up the tournament with bat and ball.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <h4 class="text-xl font-bold mb-4 text-center text-slate-700">Top 10 Run Scorers</h4>
+                        <div class="chart-container">
+                            <canvas id="topRunScorersChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <h4 class="text-xl font-bold mb-4 text-center text-slate-700">Top 10 Wicket Takers</h4>
+                        <div class="chart-container">
+                            <canvas id="topWicketTakersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12">
+                     <h4 class="text-2xl font-bold mb-6 text-center text-slate-700">Titans of the Tournament</h4>
+                     <div id="star-players" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="legacy" class="py-16 md:py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-slate-800">Lasting Legacies</h3>
+                    <p class="mt-2 text-lg text-slate-600 max-w-3xl mx-auto">The 2019 World Cup's impact is still felt today, from rule changes to the enduring spirit of the game.</p>
+                </div>
+                <div id="legacy-items" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-300 py-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>An interactive summary of the 2019 ICC Cricket World Cup.</p>
+            <p class="text-sm text-slate-400 mt-2">Content derived from "The Barest of Margins: A Definitive Report on the 2019 ICC Cricket World Cup".</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const groupStageData = [
+        { pos: 1, team: 'India', pld: 9, w: 7, l: 1, pts: 15, nrr: '+0.809', summary: 'Dominated the group stage with Rohit Sharma firing on all cylinders. Their only loss came against England. They entered the semi-finals as the team to beat.' },
+        { pos: 2, team: 'Australia', pld: 9, w: 7, l: 2, pts: 14, nrr: '+0.868', summary: 'The defending champions were formidable, led by the prolific opening pair of Warner and Finch, and the lethal bowling of Mitchell Starc. Looked set for another final.' },
+        { pos: 3, team: 'England', pld: 9, w: 6, l: 3, pts: 12, nrr: '+1.152', summary: 'The hosts and pre-tournament favorites had a major scare, losing to Pakistan and Sri Lanka. They roared back with must-win victories against India and New Zealand to qualify.' },
+        { pos: 4, team: 'New Zealand', pld: 9, w: 5, l: 3, pts: 11, nrr: '+0.175', summary: 'Started strong but faded late, losing their last three group games. They scraped into the semi-finals ahead of Pakistan on Net Run Rate, led by the masterful Kane Williamson.' },
+        { pos: 5, team: 'Pakistan', pld: 9, w: 5, l: 3, pts: 11, nrr: '-0.430', summary: 'A campaign of two halves. After a poor start, they won their last four games but were cruelly eliminated on Net Run Rate, missing out on a semi-final spot.' },
+        { pos: 6, team: 'Sri Lanka', pld: 9, w: 3, l: 4, pts: 8, nrr: '-0.919', summary: 'A mixed tournament for a team in transition. Their highlight was a stunning victory over England, a result that threw the tournament wide open.' },
+        { pos: 7, team: 'South Africa', pld: 9, w: 3, l: 5, pts: 7, nrr: '-0.030', summary: 'A disastrous and deeply disappointing campaign. Plagued by injuries and loss of form, they were never in contention and exited the tournament early.' },
+        { pos: 8, team: 'Bangladesh', pld: 9, w: 3, l: 5, pts: 7, nrr: '-0.410', summary: 'Competed hard and were powered by the phenomenal all-round performance of Shakib Al Hasan, who had a historic tournament. Secured impressive wins but fell short of the semis.' },
+        { pos: 9, team: 'West Indies', pld: 9, w: 2, l: 6, pts: 5, nrr: '-0.225', summary: 'Started with a bang by crushing Pakistan, but their campaign fizzled out. Showed flashes of brilliance but lacked consistency, notably in a heartbreaking loss to New Zealand.' },
+        { pos: 10, team: 'Afghanistan', pld: 9, w: 0, l: 9, pts: 0, nrr: '-1.322', summary: 'Finished without a win but won many hearts. They came agonizingly close to historic upsets against India and Pakistan, showcasing their immense fighting spirit.' }
+    ];
+
+    const definingMatchesData = [
+        { title: 'The Upset: SL def. ENG', result: 'by 20 runs', description: 'Chasing a modest 233, England\'s aggressive batting crumbled against Lasith Malinga\'s genius, throwing their campaign into crisis and the tournament wide open.' },
+        { title: 'The Classic: NZ def. WI', result: 'by 5 runs', description: 'An all-time classic. Carlos Brathwaite\'s astonishing century took West Indies to the brink of an impossible win, only to be caught on the boundary in the final over.' },
+        { title: 'The Heartbreak: IND def. AFG', result: 'by 11 runs', description: 'Afghanistan pushed powerhouse India to the absolute limit, needing a final-over hat-trick from Mohammed Shami to be denied a famous victory.' },
+        { title: 'The Demolition: ENG def. AUS', result: 'by 8 wickets', description: 'In a brutal semi-final display, England\'s bowlers, led by Archer and Woakes, dismantled their arch-rivals, who were reeling at 14/3 and never recovered.' },
+        { title: 'The Ambush: NZ def. IND', result: 'by 18 runs', description: 'In a two-day semi-final, NZ\'s bowlers produced a devastating opening spell to reduce India to 5/3. A heroic fightback was ended by a brilliant run-out.' },
+        { title: 'The Early Shock: PAK def. ENG', result: 'by 14 runs', description: 'Pakistan stunned the hosts despite centuries from Root and Buttler, proving England\'s path to glory would be anything but a coronation.' }
+    ];
+
+    const finalTimelineData = [
+        { time: 'The Partnership', description: 'From a precarious 86/4, Ben Stokes and Jos Buttler put on a 110-run stand of immense character, dragging England back into the final.' },
+        { time: 'The "Catch"', description: 'With 22 needed off 9, Trent Boult caught Stokes on the boundary but his foot touched the rope, turning a match-winning dismissal into a six.' },
+        { time: 'The Overthrow', description: 'The most extraordinary moment. A throw from the deep deflected off Stokes\' diving bat and ran away for four overthrows. The umpires awarded 6 runs, tying the scores.' },
+        { time: 'The Super Over', description: 'For the first time in a final, a Super Over was needed. Both teams scored 15 runs, resulting in a second tie and unimaginable drama.' },
+        { time: 'The Boundary Count', description: 'With the Super Over also tied, England were crowned champions based on a controversial tie-breaker: having scored more boundaries (26 to 17) in the 50-over match.' }
+    ];
+
+    const starPlayersData = [
+        { name: 'Kane Williamson', team: 'New Zealand', role: 'Player of the Tournament', description: 'The heart of his team. Scored 578 runs at an average of 82.57, often in immense pressure. Lauded for his masterful batting and incredible grace in defeat.' },
+        { name: 'Ben Stokes', team: 'England', role: 'Man of the Final', description: 'The ultimate hero. Played crucial, gritty innings throughout the tournament, culminating in his legendary unbeaten 84 in the final to win England the cup.' },
+        { name: 'Rohit Sharma', team: 'India', role: 'Top Run Scorer', description: 'In sublime form, he finished with 648 runs and a record-breaking FIVE centuries in a single World Cup, dominating the group stage.' },
+        { name: 'Mitchell Starc', team: 'Australia', role: 'Top Wicket Taker', description: 'The most feared bowler, setting a new World Cup record with 27 wickets. His pace and lethal yorkers were a constant threat.' },
+        { name: 'Shakib Al Hasan', team: 'Bangladesh', role: 'All-Round Colossus', description: 'Produced one of the greatest individual campaigns ever, becoming the first player to score 600+ runs and take 10+ wickets in a single World Cup.' },
+        { name: 'Jofra Archer', team: 'England', role: 'Breakout Star', description: 'The missing piece for England. His fearsome pace yielded 20 wickets, and he held his nerve to bowl the World Cup-winning Super Over.' }
+    ];
+
+    const legacyData = [
+        { title: 'Validation of a Revolution', icon: '🏆', description: 'England\'s victory was the ultimate vindication of their four-year, aggressive transformation, setting a new benchmark for ODI cricket.' },
+        { title: 'The Spirit of Cricket', icon: '🤝', description: 'New Zealand\'s grace and sportsmanship in the face of a heartbreaking, controversial defeat, led by Kane Williamson, won them global admiration and the MCC Spirit of Cricket award.' },
+        { title: 'The Rule That Changed the Game', icon: '룰', description: 'The boundary countback tie-breaker was widely condemned as an unfair way to decide a final. The intense criticism led the ICC to scrap the rule, making the 2019 final a unique piece of history.' }
+    ];
+
+    const topRunScorers = {
+        labels: ['Rohit Sharma', 'David Warner', 'Shakib Al Hasan', 'Kane Williamson', 'Joe Root', 'Jonny Bairstow', 'Aaron Finch', 'Babar Azam', 'Ben Stokes', 'Jason Roy'],
+        data: [648, 647, 606, 578, 556, 532, 507, 474, 465, 443]
+    };
+
+    const topWicketTakers = {
+        labels: ['Mitchell Starc', 'Lockie Ferguson', 'Jofra Archer', 'Mustafizur Rahman', 'Jasprit Bumrah', 'Mark Wood', 'Trent Boult', 'Mohammad Amir', 'Shaheen Afridi', 'Chris Woakes'],
+        data: [27, 21, 20, 20, 18, 18, 17, 17, 16, 16]
+    };
+
+    const nzInnings = `
+        <table class="min-w-full text-sm">
+            <thead class="bg-slate-200"><tr><th class="px-4 py-2 text-left font-semibold">Batsman</th><th class="px-4 py-2 text-left font-semibold">Dismissal</th><th class="px-4 py-2 text-right font-semibold">Runs</th></tr></thead>
+            <tbody>
+                <tr class="border-b"><td>H. Nicholls</td><td>b Plunkett</td><td class="text-right">55</td></tr>
+                <tr class="border-b"><td>M. Guptill</td><td>lbw b Woakes</td><td class="text-right">19</td></tr>
+                <tr class="border-b"><td>K. Williamson (c)</td><td>c Buttler b Plunkett</td><td class="text-right">30</td></tr>
+                <tr class="border-b"><td>R. Taylor</td><td>lbw b Wood</td><td class="text-right">15</td></tr>
+                <tr class="border-b"><td>T. Latham (wk)</td><td>c (sub) b Woakes</td><td class="text-right">47</td></tr>
+                <tr class="border-b"><td>J. Neesham</td><td>c Root b Plunkett</td><td class="text-right">19</td></tr>
+                <tr class="border-b"><td>C. de Grandhomme</td><td>c (sub) b Woakes</td><td class="text-right">16</td></tr>
+                <tr class="border-b"><td>M. Santner</td><td>not out</td><td class="text-right">5</td></tr>
+                <tr class="border-b"><td>M. Henry</td><td>b Archer</td><td class="text-right">4</td></tr>
+                <tr><td>T. Boult</td><td>not out</td><td class="text-right">1</td></tr>
+            </tbody>
+        </table>`;
+
+    const engInnings = `
+        <table class="min-w-full text-sm">
+            <thead class="bg-slate-200"><tr><th class="px-4 py-2 text-left font-semibold">Batsman</th><th class="px-4 py-2 text-left font-semibold">Dismissal</th><th class="px-4 py-2 text-right font-semibold">Runs</th></tr></thead>
+            <tbody>
+                <tr class="border-b"><td>J. Roy</td><td>c Latham b Henry</td><td class="text-right">17</td></tr>
+                <tr class="border-b"><td>J. Bairstow</td><td>b Ferguson</td><td class="text-right">36</td></tr>
+                <tr class="border-b"><td>J. Root</td><td>c Latham b de Grandhomme</td><td class="text-right">7</td></tr>
+                <tr class="border-b"><td>E. Morgan (c)</td><td>c Ferguson b Neesham</td><td class="text-right">9</td></tr>
+                <tr class="border-b"><td class="font-bold">B. Stokes</td><td class="font-bold">not out</td><td class="text-right font-bold">84</td></tr>
+                <tr class="border-b"><td>J. Buttler (wk)</td><td>c (sub) b Ferguson</td><td class="text-right">59</td></tr>
+                <tr class="border-b"><td>C. Woakes</td><td>c Latham b Ferguson</td><td class="text-right">2</td></tr>
+                <tr class="border-b"><td>L. Plunkett</td><td>c Boult b Neesham</td><td class="text-right">10</td></tr>
+                <tr class="border-b"><td>J. Archer</td><td>b Neesham</td><td class="text-right">0</td></tr>
+                <tr class="border-b"><td>A. Rashid</td><td>run out</td><td class="text-right">0</td></tr>
+                <tr><td>M. Wood</td><td>run out</td><td class="text-right">0</td></tr>
+            </tbody>
+        </table>`;
+
+    function populateTable(tableId, data) {
+        const tableBody = document.getElementById(tableId);
+        tableBody.innerHTML = data.map(team => `
+            <tr class="cursor-pointer hover:bg-slate-50" data-team="${team.team}">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">${team.pos}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">${team.team}</td>
+                <td class="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-slate-500">${team.pld}</td>
+                <td class="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-slate-500">${team.w}</td>
+                <td class="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-slate-500">${team.l}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-bold">${team.pts}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${team.nrr}</td>
+            </tr>
+            <tr class="card-reveal-row bg-blue-50">
+                <td colspan="7" class="p-0">
+                    <div class="card-reveal" id="summary-${team.team}">
+                        <p class="p-4 text-sm text-slate-700">${team.summary}</p>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function populateCards(containerId, data) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = data.map(item => `
+            <div class="bg-slate-100 p-4 rounded-lg shadow transform hover:scale-105 transition-transform duration-300">
+                <h5 class="font-bold text-slate-800">${item.title}</h5>
+                <p class="text-sm font-semibold text-blue-600">${item.result}</p>
+                <p class="text-sm text-slate-600 mt-2">${item.description}</p>
+            </div>
+        `).join('');
+    }
+
+    function populateStarPlayers(containerId, data) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = data.map(player => `
+             <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                <h5 class="text-xl font-bold text-slate-800">${player.name}</h5>
+                <p class="font-semibold text-blue-600">${player.role}</p>
+                <p class="text-slate-600 mt-2 text-sm">${player.description}</p>
+            </div>
+        `).join('');
+    }
+
+    function populateLegacy(containerId, data) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = data.map(item => `
+            <div class="bg-slate-50 p-6 rounded-xl shadow-lg text-center">
+                <div class="text-4xl mb-4">${item.icon}</div>
+                <h4 class="text-xl font-bold text-slate-800">${item.title}</h4>
+                <p class="text-slate-600 mt-2">${item.description}</p>
+            </div>
+        `).join('');
+    }
+    
+    function populateTimeline(containerId, data) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = data.map(item => `
+            <div class="relative timeline-item pb-4">
+                <h5 class="font-bold text-slate-700">${item.time}</h5>
+                <p class="text-sm text-slate-600">${item.description}</p>
+            </div>
+        `).join('');
+    }
+    
+    populateTable('group-stage-table', groupStageData);
+    populateCards('defining-matches', definingMatchesData);
+    populateStarPlayers('star-players', starPlayersData);
+    populateLegacy('legacy-items', legacyData);
+    populateTimeline('final-timeline', finalTimelineData);
+
+    document.getElementById('nz-scorecard').innerHTML = nzInnings;
+    document.getElementById('eng-scorecard').innerHTML = engInnings;
+
+    document.getElementById('group-stage-table').addEventListener('click', function(e) {
+        const row = e.target.closest('tr[data-team]');
+        if (row) {
+            const team = row.dataset.team;
+            const summaryDiv = document.getElementById(`summary-${team}`);
+            summaryDiv.classList.toggle('active');
+        }
+    });
+
+    const nzBtn = document.getElementById('nz-btn');
+    const engBtn = document.getElementById('eng-btn');
+    const nzScorecard = document.getElementById('nz-scorecard');
+    const engScorecard = document.getElementById('eng-scorecard');
+
+    nzBtn.addEventListener('click', () => {
+        nzScorecard.classList.remove('hidden');
+        engScorecard.classList.add('hidden');
+        nzBtn.classList.add('active', 'text-slate-700');
+        nzBtn.classList.remove('text-slate-500');
+        engBtn.classList.remove('active', 'text-slate-700');
+        engBtn.classList.add('text-slate-500');
+    });
+
+    engBtn.addEventListener('click', () => {
+        engScorecard.classList.remove('hidden');
+        nzScorecard.classList.add('hidden');
+        engBtn.classList.add('active', 'text-slate-700');
+        engBtn.classList.remove('text-slate-500');
+        nzBtn.classList.remove('active', 'text-slate-700');
+        nzBtn.classList.add('text-slate-500');
+    });
+
+
+    function createChart(ctx, type, labels, data, chartLabel, backgroundColor, borderColor) {
+        new Chart(ctx, {
+            type: type,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: chartLabel,
+                    data: data,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: {
+                           display: false
+                        }
+                    },
+                    y: {
+                        grid: {
+                           display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.raw}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    const runsCtx = document.getElementById('topRunScorersChart').getContext('2d');
+    createChart(runsCtx, 'bar', topRunScorers.labels, topRunScorers.data, 'Runs', 'rgba(59, 130, 246, 0.5)', 'rgba(59, 130, 246, 1)');
+
+    const wicketsCtx = document.getElementById('topWicketTakersChart').getContext('2d');
+    createChart(wicketsCtx, 'bar', topWicketTakers.labels, topWicketTakers.data, 'Wickets', 'rgba(74, 222, 128, 0.5)', 'rgba(74, 222, 128, 1)');
+});
+</script>
+</body>
+</html>

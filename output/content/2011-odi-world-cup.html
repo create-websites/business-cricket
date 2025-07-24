@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The 2011 Cricket World Cup: An Interactive Journey</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: "Cricket Whites & Willow" -->
+    <!-- Application Structure Plan: The SPA is designed as a narrative journey, guiding the user chronologically through the World Cup. It starts with an overview, moves to the group stages, then the high-stakes knockouts, and culminates in the final and legacy sections. This story-driven, single-page scroll approach was chosen over a dashboard to make the complex event easily digestible for both avid fans and casual observers. Navigation is handled by a sticky top bar that allows users to jump to key sections, facilitating both linear storytelling and direct access to specific information. Interactive elements like tabs for group tables and clickable match summaries are used to layer information without overwhelming the user, ensuring a clean and focused experience. -->
+    <!-- Visualization & Content Choices: 
+        - Tournament Leaders: Goal: Inform. Method: Bar Chart (Chart.js). Interaction: Tooltips on hover provide exact stats. Justification: A bar chart offers a clear, immediate comparison of the top performers in key statistical categories (runs and wickets), which is more impactful than a simple table.
+        - Knockout Bracket: Goal: Organize. Method: HTML/CSS with Tailwind. Interaction: N/A. Justification: A visual bracket clearly illustrates the path to the final. HTML/CSS is sufficient and lightweight for this static representation.
+        - Final Match Summary: Goal: Inform/Compare. Method: Side-by-side text blocks and key stat cards. Interaction: N/A. Justification: Presents the final's narrative and key performances in a balanced, easy-to-compare format.
+        - Player of the Tournament: Goal: Highlight. Method: Feature card with a doughnut chart (Chart.js). Interaction: Tooltip on chart. Justification: A dedicated feature card elevates the importance of Yuvraj Singh's performance. The doughnut chart provides a quick visual breakdown of his run contributions (fifties vs. century).
+        - Records Broken: Goal: Inform. Method: Styled list with icons. Interaction: N/A. Justification: An easily scannable list format is best for presenting these distinct facts. Icons add visual interest.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #333333;
+        }
+        .nav-active {
+            color: #1e40af;
+            font-weight: 600;
+            border-bottom: 2px solid #1e40af;
+        }
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        .tab-active {
+            background-color: #2563eb;
+            color: white;
+        }
+        .tab-inactive {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl md:text-2xl font-bold text-gray-800">2011 World Cup</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-item px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Overview</a>
+                        <a href="#group-stage" class="nav-item px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Group Stage</a>
+                        <a href="#knockouts" class="nav-item px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Knockouts</a>
+                        <a href="#final" class="nav-item px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">The Final</a>
+                        <a href="#legacy" class="nav-item px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Legacy</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="overview" class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <p class="text-base font-semibold text-blue-600 tracking-wide uppercase">A Tournament for the Ages</p>
+                    <h2 class="mt-2 text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">A Subcontinent's Roar</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-xl text-gray-500">The 2011 ICC Cricket World Cup was a story of destiny fulfilled. Co-hosted by India, Sri Lanka, and Bangladesh, it saw India lift the trophy on home soil for the first time in history, ending a 28-year wait and providing a fairytale ending for the legendary Sachin Tendulkar.</p>
+                </div>
+
+                <div class="mt-12">
+                    <h3 class="text-2xl font-semibold text-center text-gray-800 mb-8">Tournament Leaders</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                        <div class="card p-6">
+                            <h4 class="text-xl font-bold text-center mb-4">Most Runs</h4>
+                            <div class="chart-container">
+                                <canvas id="mostRunsChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="card p-6">
+                            <h4 class="text-xl font-bold text-center mb-4">Most Wickets</h4>
+                            <div class="chart-container">
+                                <canvas id="mostWicketsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="group-stage" class="py-16 sm:py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">The Group Stage</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-xl text-gray-500">The initial phase was a tale of two groups: Pakistan's surprising dominance in Group A and the sheer unpredictability of Group B, which produced some of the tournament's most memorable matches.</p>
+                </div>
+
+                <div class="mt-12">
+                    <div class="flex justify-center mb-8">
+                        <button id="groupA-tab" class="tab-button tab-active px-6 py-2 font-semibold rounded-l-lg">Group A</button>
+                        <button id="groupB-tab" class="tab-button tab-inactive px-6 py-2 font-semibold rounded-r-lg">Group B</button>
+                    </div>
+                    <div id="groupA-content" class="group-content">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pos</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">W</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">L</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pts</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groupA-table" class="bg-white divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="groupB-content" class="group-content hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pos</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">W</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">L</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">T</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pts</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groupB-table" class="bg-white divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="card p-6">
+                        <h3 class="font-bold text-xl mb-2">Spotlight: The Bengaluru Tie</h3>
+                        <p class="text-gray-600">India (338) tied with England (338/8). A high-scoring thriller defined by centuries from Sachin Tendulkar (120) and Andrew Strauss (158), this match proved that on subcontinent pitches, no total was safe.</p>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="font-bold text-xl mb-2">Spotlight: The Bangalore Upset</h3>
+                        <p class="text-gray-600">Ireland (329/7) beat England (327/8). In one of the greatest World Cup upsets, Kevin O'Brien smashed the fastest century in the tournament's history (50 balls) to lead Ireland to a historic victory from the jaws of defeat.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="knockouts" class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">The Knockouts</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-xl text-gray-500">The pressure intensified as dynasties fell and giants clashed. This section maps the thrilling path from the quarter-finals to the final showdown.</p>
+                </div>
+
+                <div class="mt-12">
+                    <div class="max-w-5xl mx-auto p-4 md:p-8">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-y-8 gap-x-4 text-center">
+                            <div class="space-y-4">
+                                <h4 class="font-bold text-lg">Quarter-Finals</h4>
+                                <div class="card p-3">Pakistan def. West Indies</div>
+                                <div class="card p-3">India def. Australia</div>
+                                <div class="card p-3">New Zealand def. South Africa</div>
+                                <div class="card p-3">Sri Lanka def. England</div>
+                            </div>
+                            <div class="space-y-16 mt-0 md:mt-16">
+                                <h4 class="font-bold text-lg">Semi-Finals</h4>
+                                <div class="card p-3">India def. Pakistan</div>
+                                <div class="card p-3">Sri Lanka def. New Zealand</div>
+                            </div>
+                            <div class="mt-0 md:mt-40">
+                                <h4 class="font-bold text-lg">Final</h4>
+                                <div class="card p-3 bg-blue-100 border-2 border-blue-500">India def. Sri Lanka</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="card p-6">
+                        <h3 class="font-bold text-xl mb-2">India Ends Australia's Reign</h3>
+                        <p class="text-gray-600">In a pivotal quarter-final, India defeated the three-time defending champions Australia. Yuvraj Singh's all-round performance (57* & 2 wickets) was instrumental in chasing down 261, shattering Australia's 12-year dominance and signaling a power shift in world cricket.</p>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="font-bold text-xl mb-2">The Mother of All Battles</h3>
+                        <p class="text-gray-600">The India vs. Pakistan semi-final in Mohali was a global event. India's total of 260, anchored by Sachin Tendulkar's 85, proved enough as a disciplined bowling effort saw them win by 29 runs, maintaining their unbeaten World Cup record against their arch-rivals.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="final" class="py-16 sm:py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">The Final: A Nation's Destiny</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-xl text-gray-500">On April 2, 2011, at the Wankhede Stadium in Mumbai, two Asian powerhouses clashed for the ultimate prize in world cricket.</p>
+                </div>
+
+                <div class="mt-12 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="card p-6">
+                        <h3 class="font-bold text-2xl mb-4 text-blue-800">Sri Lanka Innings: 274/6</h3>
+                        <p class="text-gray-600">After a shaky start, Sri Lanka posted a formidable total thanks to a sublime century from <strong class="text-gray-800">Mahela Jayawardene (103*)</strong>. His masterclass, supported by Kumar Sangakkara (48), set a challenging target for India in the high-pressure final.</p>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="font-bold text-2xl mb-4 text-green-800">India's Chase: 277/4</h3>
+                        <p class="text-gray-600">India's chase began disastrously, losing Sehwag and Tendulkar early. But a heroic <strong class="text-gray-800">97 from Gautam Gambhir</strong> and a captain's knock of <strong class="text-gray-800">91* from MS Dhoni</strong> guided the nation to a historic victory, sealed with Dhoni's iconic six.</p>
+                    </div>
+                </div>
+
+                <div class="mt-12 card p-8 max-w-4xl mx-auto">
+                    <h3 class="text-2xl font-bold text-center mb-4">The Masterstroke</h3>
+                    <p class="text-lg text-gray-700 text-center">With India at a precarious 114/3, captain MS Dhoni promoted himself up the order ahead of the in-form Yuvraj Singh. This tactical genius neutralized Sri Lanka's key spinner, Muttiah Muralitharan, and changed the course of the final. It remains one of the most celebrated decisions in cricket history.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="legacy" class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">Legacy and Records</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-xl text-gray-500">The 2011 World Cup was not just about one final; it was a tournament that set records, defined careers, and left an indelible mark on the sport.</p>
+                </div>
+
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="card p-6 lg:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-center">Player of the Tournament: Yuvraj Singh</h3>
+                        <div class="flex flex-col sm:flex-row items-center gap-6">
+                            <div class="w-full sm:w-2/3">
+                                <p class="text-gray-600">Yuvraj Singh's all-round brilliance was the cornerstone of India's victory. He scored <strong class="text-gray-900">362 runs</strong> and took <strong class="text-gray-900">15 wickets</strong>, earning four Man of the Match awards. His performance was later revealed to be even more heroic, as he battled cancer throughout the tournament, making his triumph a testament to incredible courage.</p>
+                            </div>
+                            <div class="w-full sm:w-1/3">
+                                <div class="chart-container" style="height: 200px; max-height: 200px;">
+                                    <canvas id="yuvrajChart"></canvas>
+                                </div>
+                                <p class="text-center text-sm text-gray-500 mt-2">Run Breakdown (1 Century, 4 Fifties)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-4">Records Broken</h3>
+                        <ul class="space-y-3 text-gray-600">
+                            <li class="flex items-start"><span class="text-blue-500 mr-2">🏆</span><strong>First Host Nation to Win:</strong> India on home soil.</li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2">⚡</span><strong>Fastest WC Century:</strong> Kevin O'Brien (50 balls).</li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2">🎯</span><strong>Highest Chase in a Final:</strong> India's 275.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white mt-16">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
+            <p>&copy; 2024 Interactive Cricket Archives. An exploration of the 2011 ICC World Cup.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            callback: function(value, index, ticks) {
+                                const label = this.getLabelForValue(value);
+                                return label.length > 16 ? label.substring(0, 15) + '...' : label;
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            };
+
+            const mostRunsData = {
+                labels: ['Tillakaratne Dilshan (SL)', 'Sachin Tendulkar (IND)', 'Kumar Sangakkara (SL)', 'Gautam Gambhir (IND)', 'Virender Sehwag (IND)'],
+                datasets: [{
+                    label: 'Runs',
+                    data: [500, 482, 465, 393, 380],
+                    backgroundColor: 'rgba(37, 99, 235, 0.6)',
+                    borderColor: 'rgba(37, 99, 235, 1)',
+                    borderWidth: 1
+                }]
+            };
+            new Chart(document.getElementById('mostRunsChart'), { type: 'bar', data: mostRunsData, options: chartOptions });
+
+            const mostWicketsData = {
+                labels: ['Shahid Afridi (PAK)', 'Zaheer Khan (IND)', 'Tim Southee (NZ)', 'Robin Peterson (SA)', 'Muttiah Muralitharan (SL)'],
+                datasets: [{
+                    label: 'Wickets',
+                    data: [21, 21, 18, 15, 15],
+                    backgroundColor: 'rgba(22, 163, 74, 0.6)',
+                    borderColor: 'rgba(22, 163, 74, 1)',
+                    borderWidth: 1
+                }]
+            };
+            new Chart(document.getElementById('mostWicketsChart'), { type: 'bar', data: mostWicketsData, options: chartOptions });
+
+            const yuvrajData = {
+                labels: ['Fifties', 'Century'],
+                datasets: [{
+                    label: 'Performance',
+                    data: [4, 1],
+                    backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(239, 68, 68, 0.7)'],
+                    borderColor: ['rgba(59, 130, 246, 1)', 'rgba(239, 68, 68, 1)'],
+                    borderWidth: 1
+                }]
+            };
+            new Chart(document.getElementById('yuvrajChart'), {
+                type: 'doughnut',
+                data: yuvrajData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const groupAData = [
+                { pos: 1, team: 'Pakistan', w: 5, l: 1, pts: 10 },
+                { pos: 2, team: 'Sri Lanka', w: 4, l: 1, pts: 9 },
+                { pos: 3, team: 'Australia', w: 4, l: 1, pts: 9 },
+                { pos: 4, team: 'New Zealand', w: 4, l: 2, pts: 8 },
+            ];
+
+            const groupBData = [
+                { pos: 1, team: 'South Africa', w: 5, l: 1, t: 0, pts: 10 },
+                { pos: 2, team: 'India', w: 4, l: 1, t: 1, pts: 9 },
+                { pos: 3, team: 'England', w: 3, l: 2, t: 1, pts: 7 },
+                { pos: 4, team: 'West Indies', w: 3, l: 3, t: 0, pts: 6 },
+            ];
+
+            const groupATable = document.getElementById('groupA-table');
+            groupAData.forEach(item => {
+                groupATable.innerHTML += `<tr><td class="px-6 py-4 whitespace-nowrap">${item.pos}</td><td class="px-6 py-4 whitespace-nowrap">${item.team}</td><td class="px-6 py-4 whitespace-nowrap">${item.w}</td><td class="px-6 py-4 whitespace-nowrap">${item.l}</td><td class="px-6 py-4 whitespace-nowrap font-bold">${item.pts}</td></tr>`;
+            });
+
+            const groupBTable = document.getElementById('groupB-table');
+            groupBData.forEach(item => {
+                groupBTable.innerHTML += `<tr><td class="px-6 py-4 whitespace-nowrap">${item.pos}</td><td class="px-6 py-4 whitespace-nowrap">${item.team}</td><td class="px-6 py-4 whitespace-nowrap">${item.w}</td><td class="px-6 py-4 whitespace-nowrap">${item.l}</td><td class="px-6 py-4 whitespace-nowrap">${item.t}</td><td class="px-6 py-4 whitespace-nowrap font-bold">${item.pts}</td></tr>`;
+            });
+
+            const groupATab = document.getElementById('groupA-tab');
+            const groupBTab = document.getElementById('groupB-tab');
+            const groupAContent = document.getElementById('groupA-content');
+            const groupBContent = document.getElementById('groupB-content');
+
+            groupATab.addEventListener('click', () => {
+                groupAContent.classList.remove('hidden');
+                groupBContent.classList.add('hidden');
+                groupATab.classList.add('tab-active');
+                groupATab.classList.remove('tab-inactive');
+                groupBTab.classList.add('tab-inactive');
+                groupBTab.classList.remove('tab-active');
+            });
+
+            groupBTab.addEventListener('click', () => {
+                groupBContent.classList.remove('hidden');
+                groupAContent.classList.add('hidden');
+                groupBTab.classList.add('tab-active');
+                groupBTab.classList.remove('tab-inactive');
+                groupATab.classList.add('tab-inactive');
+                groupATab.classList.remove('tab-active');
+            });
+            
+            const sections = document.querySelectorAll('main section');
+            const navLinks = document.querySelectorAll('nav a');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 68) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('nav-active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('nav-active');
+                    }
+                });
+            });
+            
+             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start' 
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

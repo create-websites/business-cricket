@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2015 Cricket World Cup: An Interactive Review</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Background: Off-White/Beige, Text: Dark Slate, Accents: Gold & Ocean Blue) -->
+    <!-- Application Structure Plan: A thematic, multi-section SPA design is used over a linear report format to enhance user engagement and data discovery. A sticky top nav ('Home', 'Tournament Journey', 'Star Performers', 'Key Stories', 'The Final') allows users to jump to topics of interest. The 'Tournament Journey' provides a visual flow from pools to final, while 'Star Performers' uses interactive charts for data comparison. This non-linear, task-oriented structure prioritizes user-driven exploration of the rich dataset over passive reading. -->
+    <!-- Visualization & Content Choices: Report Info -> Goal -> Viz/Method -> Interaction -> Justification. 1. Tournament Path -> Organize -> HTML/CSS Flow Diagram -> Click to show match details -> Visually maps the knockout progression clearly. 2. Top Scorers/Wicket-takers -> Compare -> Chart.js Bar Chart -> Hover for detailed stats -> Best for comparing ranked stats. 3. Final Scorecard -> Inform -> HTML Tables with Tabs -> Click to switch innings -> Standard, clear format for cricket scores. 4. Narratives/Controversies -> Organize/Inform -> HTML/CSS Cards -> Click to expand text -> Breaks down dense text into digestible, interactive chunks. All visualizations use Canvas via Chart.js or pure HTML/CSS, adhering to the no-SVG constraint. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFDFB;
+            color: #2d3748;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover {
+            color: #D69E2E;
+        }
+        .active-nav {
+            color: #D69E2E;
+            border-bottom: 2px solid #D69E2E;
+        }
+        .knockout-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .knockout-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-800">CWC 2015</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#home" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">Home</a>
+                        <a href="#journey" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">Tournament Journey</a>
+                        <a href="#performers" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">Star Performers</a>
+                        <a href="#stories" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">Key Stories</a>
+                        <a href="#final" class="nav-link px-3 py-2 rounded-md text-sm font-semibold">The Final</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">Southern Thunder</h2>
+                <p class="mt-4 text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">An Interactive Review of the 2015 ICC Cricket World Cup</p>
+                <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-4xl mx-auto">
+                    <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+                        <p class="text-sm font-semibold text-gray-500">Winner</p>
+                        <p class="text-2xl font-bold text-yellow-600">Australia</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+                        <p class="text-sm font-semibold text-gray-500">Runner-up</p>
+                        <p class="text-2xl font-bold text-gray-800">New Zealand</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+                        <p class="text-sm font-semibold text-gray-500">Player of the Tournament</p>
+                        <p class="text-2xl font-bold text-blue-800">Mitchell Starc</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+                        <p class="text-sm font-semibold text-gray-500">Total Matches</p>
+                        <p class="text-2xl font-bold text-gray-800">49</p>
+                    </div>
+                </div>
+                <div class="mt-16 text-left max-w-4xl mx-auto">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">The Story of the Tournament</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        The 2015 World Cup, co-hosted by Australia and New Zealand, was defined by the compelling narrative of its two hosts. New Zealand, led by Brendon McCullum, captivated the world with a fearless, hyper-aggressive brand of cricket, storming to the final unbeaten. They were the thrilling underdogs. In contrast, Australia stood as the powerful, clinical machine, favourites on home soil. This dichotomy of the impassioned challenger versus the imperious incumbent set the stage for a dramatic Trans-Tasman final, the culmination of six weeks of breathtaking cricket.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="journey" class="py-16 sm:py-20 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">The Journey to the Final</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">This section charts the course of the tournament, from the initial group stages where teams battled for a spot in the knockouts, to the high-stakes drama of the quarter-finals and semi-finals that determined the two ultimate contenders.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 mb-16">
+                    <div>
+                        <h3 class="text-2xl font-semibold text-center mb-4">Pool A Standings</h3>
+                        <div class="overflow-x-auto bg-white rounded-lg shadow">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">W</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">L</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pts</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NRR</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pool-a-table" class="bg-white divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold text-center mb-4">Pool B Standings</h3>
+                        <div class="overflow-x-auto bg-white rounded-lg shadow">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">W</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">L</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pts</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NRR</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pool-b-table" class="bg-white divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-semibold text-center mb-8">Knockout Stage</h3>
+                    <div id="knockout-stage-container" class="space-y-8"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="performers" class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">Star Performers</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">The 2015 World Cup was illuminated by incredible individual feats. This section showcases the players who dominated the tournament with bat and ball, setting records and defining matches with their brilliance.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+                    <div class="sm:hidden">
+                        <select id="tabs" class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                            <option selected>Top Run Scorers</option>
+                            <option>Top Wicket Takers</option>
+                        </select>
+                    </div>
+                    <div class="hidden sm:block">
+                        <nav class="flex space-x-4" aria-label="Tabs">
+                            <button id="tab-batting" class="tab-button active-tab text-gray-700 hover:text-gray-800 px-3 py-2 font-medium text-sm rounded-md">Top Run Scorers</button>
+                            <button id="tab-bowling" class="tab-button text-gray-500 hover:text-gray-700 px-3 py-2 font-medium text-sm rounded-md">Top Wicket Takers</button>
+                        </nav>
+                    </div>
+                    <div id="batting-chart-container" class="mt-6">
+                        <div class="chart-container">
+                            <canvas id="topBattersChart"></canvas>
+                        </div>
+                    </div>
+                    <div id="bowling-chart-container" class="mt-6 hidden">
+                        <div class="chart-container">
+                            <canvas id="topBowlersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="stories" class="py-16 sm:py-20 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">Defining Stories & Controversies</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">Beyond the scores, the tournament was rich with compelling subplots. Explore the breakthrough performances of underdog nations, the moments of high drama, and the controversies that sparked debate across the cricketing world.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div id="underdog-stories"></div>
+                    <div id="defining-moments"></div>
+                    <div id="controversies"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="final" class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">The Final: Australia vs New Zealand</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-600">The culmination of a six-week saga at the iconic Melbourne Cricket Ground. This section provides a detailed breakdown of the final match, from the pivotal first over to Australia's coronation as five-time world champions.</p>
+                </div>
+                <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+                    <div class="text-center border-b pb-4 mb-4">
+                        <h3 class="text-2xl font-bold">Australia won by 7 wickets</h3>
+                        <p class="text-gray-600">Melbourne Cricket Ground, 29 March 2015</p>
+                        <p class="mt-2 text-lg font-semibold">Player of the Match: <span class="text-blue-800">James Faulkner (AUS)</span></p>
+                    </div>
+                    <div>
+                        <div class="border-b border-gray-200">
+                            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                                <button id="tab-nz-innings" class="scorecard-tab active-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">New Zealand Innings</button>
+                                <button id="tab-aus-innings" class="scorecard-tab text-gray-500 hover:text-gray-700 whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm">Australia Innings</button>
+                            </nav>
+                        </div>
+                        <div id="nz-scorecard" class="mt-6"></div>
+                        <div id="aus-scorecard" class="mt-6 hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>&copy; 2024 Interactive Sports Analytics. All data sourced from the 2015 Cricket World Cup report.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const data = {
+                poolA: [
+                    { team: 'New Zealand', w: 6, l: 0, pts: 12, nrr: '+2.564', qualified: true },
+                    { team: 'Australia', w: 4, l: 1, pts: 9, nrr: '+2.257', qualified: true },
+                    { team: 'Sri Lanka', w: 4, l: 2, pts: 8, nrr: '+0.751', qualified: true },
+                    { team: 'Bangladesh', w: 3, l: 2, pts: 7, nrr: '+0.136', qualified: true },
+                    { team: 'England', w: 2, l: 4, pts: 4, nrr: '-0.753' },
+                    { team: 'Afghanistan', w: 1, l: 5, pts: 2, nrr: '-1.853' },
+                    { team: 'Scotland', w: 0, l: 6, pts: 0, nrr: '-3.445' },
+                ],
+                poolB: [
+                    { team: 'India', w: 6, l: 0, pts: 12, nrr: '+1.827', qualified: true },
+                    { team: 'South Africa', w: 4, l: 2, pts: 8, nrr: '+1.707', qualified: true },
+                    { team: 'Pakistan', w: 4, l: 2, pts: 8, nrr: '-0.085', qualified: true },
+                    { team: 'West Indies', w: 3, l: 3, pts: 6, nrr: '-0.053', qualified: true },
+                    { team: 'Ireland', w: 3, l: 3, pts: 6, nrr: '-0.933' },
+                    { team: 'Zimbabwe', w: 1, l: 5, pts: 2, nrr: '-0.788' },
+                    { team: 'UAE', w: 0, l: 6, pts: 0, nrr: '-2.032' },
+                ],
+                knockouts: [
+                    { stage: 'Quarter-Finals', matches: [
+                        { match: 'South Africa vs Sri Lanka', winner: 'South Africa', result: 'Won by 9 wickets', pom: 'Imran Tahir (SA)'},
+                        { match: 'India vs Bangladesh', winner: 'India', result: 'Won by 109 runs', pom: 'Rohit Sharma (IND)'},
+                        { match: 'Australia vs Pakistan', winner: 'Australia', result: 'Won by 6 wickets', pom: 'Josh Hazlewood (AUS)'},
+                        { match: 'New Zealand vs West Indies', winner: 'New Zealand', result: 'Won by 143 runs', pom: 'Martin Guptill (NZ)'}
+                    ]},
+                    { stage: 'Semi-Finals', matches: [
+                        { match: 'New Zealand vs South Africa', winner: 'New Zealand', result: 'Won by 4 wickets (D/L)', pom: 'Grant Elliott (NZ)'},
+                        { match: 'Australia vs India', winner: 'Australia', result: 'Won by 95 runs', pom: 'Steve Smith (AUS)'}
+                    ]},
+                    { stage: 'Final', matches: [
+                        { match: 'Australia vs New Zealand', winner: 'Australia', result: 'Won by 7 wickets', pom: 'James Faulkner (AUS)'}
+                    ]}
+                ],
+                topBatters: [
+                    { player: 'Martin Guptill', team: 'NZ', runs: 547, hs: '237*', avg: 68.37, sr: 104.58 },
+                    { player: 'Kumar Sangakkara', team: 'SL', runs: 541, hs: '124', avg: 108.20, sr: 105.87 },
+                    { player: 'AB de Villiers', team: 'SA', runs: 482, hs: '162*', avg: 96.40, sr: 144.31 },
+                    { player: 'Brendan Taylor', team: 'ZIM', runs: 433, hs: '138', avg: 72.16, sr: 106.91 },
+                    { player: 'Shikhar Dhawan', team: 'IND', runs: 412, hs: '137', avg: 51.50, sr: 91.76 },
+                    { player: 'Steve Smith', team: 'AUS', runs: 402, hs: '105', avg: 67.00, sr: 91.57 },
+                    { player: 'T Dilshan', team: 'SL', runs: 395, hs: '161*', avg: 65.83, sr: 96.58 },
+                    { player: 'Faf du Plessis', team: 'SA', runs: 380, hs: '109', avg: 63.33, sr: 84.63 },
+                    { player: 'Mahmudullah', team: 'BAN', runs: 365, hs: '128*', avg: 73.00, sr: 81.84 },
+                    { player: 'Misbah-ul-Haq', team: 'PAK', runs: 350, hs: '76', avg: 50.00, sr: 75.11 },
+                ],
+                topBowlers: [
+                    { player: 'Mitchell Starc', team: 'AUS', wkts: 22, bbi: '6/28', avg: 10.18, econ: 3.50 },
+                    { player: 'Trent Boult', team: 'NZ', wkts: 22, bbi: '5/27', avg: 16.86, econ: 4.36 },
+                    { player: 'Umesh Yadav', team: 'IND', wkts: 18, bbi: '4/31', avg: 17.83, econ: 4.98 },
+                    { player: 'Morne Morkel', team: 'SA', wkts: 17, bbi: '3/34', avg: 17.58, econ: 4.38 },
+                    { player: 'Mohammed Shami', team: 'IND', wkts: 17, bbi: '4/35', avg: 17.29, econ: 4.81 },
+                    { player: 'Jerome Taylor', team: 'WI', wkts: 17, bbi: '3/15', avg: 19.29, econ: 5.35 },
+                    { player: 'Wahab Riaz', team: 'PAK', wkts: 16, bbi: '4/45', avg: 23.00, econ: 5.56 },
+                    { player: 'Daniel Vettori', team: 'NZ', wkts: 15, bbi: '4/18', avg: 20.46, econ: 4.04 },
+                    { player: 'Mitchell Johnson', team: 'AUS', wkts: 15, bbi: '4/22', avg: 21.73, econ: 5.30 },
+                    { player: 'Imran Tahir', team: 'SA', wkts: 15, bbi: '5/45', avg: 21.53, econ: 4.23 },
+                ],
+                 stories: {
+                    underdogs: [
+                        { title: "Bangladesh's Breakthrough", content: "This tournament marked a turning point for Bangladesh, reaching their first-ever World Cup quarter-final. Their historic victory over England, powered by Mahmudullah's century, cemented their status as a rising force and catalyzed a golden era for the team." },
+                        { title: "Afghanistan's Arrival", content: "A story of hope and resilience, Afghanistan's maiden World Cup appearance was highlighted by an emotional, nail-biting one-wicket victory over Scotland. It was a historic moment that demonstrated their immense potential and accelerated their path to Test status." },
+                        { title: "Ireland's Defiant Stand", content: "Continuing their legacy of giant-killing, Ireland clinically chased down 305 to defeat the West Indies. The victory was also a powerful statement against the ICC's decision to shrink the 2019 tournament, advocating for the rights of associate nations." }
+                    ],
+                    moments: [
+                        { title: "Grant Elliott's Six", content: "In one of the greatest ODIs ever, Grant Elliott hit a six off the penultimate ball against Dale Steyn to send New Zealand into their first-ever final, creating scenes of Kiwi jubilation and South African heartbreak." },
+                        { title: "Wahab Riaz's Fiery Spell", content: "In the quarter-final, Pakistan's Wahab Riaz unleashed one of the most hostile and electrifying spells of fast bowling in World Cup history against Shane Watson. The duel of aggression and resilience transcended the result." },
+                        { title: "Guptill's 237*", content: "Martin Guptill's monumental 237 not out against the West Indies was the highest individual score in World Cup history. His merciless onslaught propelled New Zealand to a massive total in a display of savage batting." }
+                    ],
+                    controversies: [
+                        { title: "The Rohit Sharma No-Ball", content: "In the quarter-final vs Bangladesh, Rohit Sharma was caught on 90, but umpire Aleem Dar controversially ruled a no-ball for height. Replays suggested it was a legal delivery, sparking furious protests and tainting India's victory." },
+                        { title: "Taylor's Disallowed Ton", content: "England's James Taylor was cruelly denied a century on 98* against Australia due to a misapplication of DRS rules. The ICC later admitted the error, but the milestone was irrevocably lost." },
+                        { title: "The John Mooney Catch", content: "A crucial catch by Ireland's John Mooney on the boundary to dismiss Zimbabwe's Sean Williams was upheld despite inconclusive replays, leading to a deeply personal and unwarranted media attack on Mooney post-match." }
+                    ]
+                },
+                finalScorecard: {
+                    nzInnings: [
+                        { p: 'Martin Guptill', d: 'b Maxwell', r: 15, b: 34 },
+                        { p: 'Brendon McCullum (c)', d: 'b Starc', r: 0, b: 3 },
+                        { p: 'Kane Williamson', d: 'c & b Johnson', r: 12, b: 33 },
+                        { p: 'Ross Taylor', d: 'c Haddin b Faulkner', r: 40, b: 72 },
+                        { p: 'Grant Elliott', d: 'c Haddin b Faulkner', r: 83, b: 82 },
+                        { p: 'Corey Anderson', d: 'b Faulkner', r: 0, b: 2 },
+                        { p: 'Luke Ronchi (wk)', d: 'c Clarke b Starc', r: 0, b: 4 },
+                        { p: 'Daniel Vettori', d: 'b Johnson', r: 8, b: 21 },
+                        { p: 'Tim Southee', d: 'run out (Maxwell)', r: 11, b: 11 },
+                        { p: 'Matt Henry', d: 'c Starc b Johnson', r: 0, b: 7 },
+                        { p: 'Trent Boult', d: 'not out', r: 0, b: 1 },
+                    ],
+                    ausInnings: [
+                        { p: 'David Warner', d: 'c Elliott b Henry', r: 45, b: 46 },
+                        { p: 'Aaron Finch', d: 'c & b Boult', r: 0, b: 5 },
+                        { p: 'Steve Smith', d: 'not out', r: 56, b: 71 },
+                        { p: 'Michael Clarke (c)', d: 'b Henry', r: 74, b: 72 },
+                        { p: 'Shane Watson', d: 'not out', r: 2, b: 5 },
+                    ]
+                }
+            };
+            
+            function populateTable(tableId, data) {
+                const tableBody = document.getElementById(tableId);
+                tableBody.innerHTML = data.map(row => `
+                    <tr class="${row.qualified ? 'bg-green-50' : ''}">
+                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium ${row.qualified ? 'text-green-800' : 'text-gray-900'}">${row.team}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">${row.w}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">${row.l}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 font-semibold">${row.pts}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">${row.nrr}</td>
+                    </tr>
+                `).join('');
+            }
+
+            populateTable('pool-a-table', data.poolA);
+            populateTable('pool-b-table', data.poolB);
+
+            function createKnockoutStage() {
+                const container = document.getElementById('knockout-stage-container');
+                container.innerHTML = data.knockouts.map(stage => `
+                    <div>
+                        <h4 class="text-xl font-bold text-center mb-6 text-gray-800">${stage.stage}</h4>
+                        <div class="grid grid-cols-1 ${stage.stage === 'Quarter-Finals' ? 'sm:grid-cols-2 lg:grid-cols-4' : (stage.stage === 'Semi-Finals' ? 'sm:grid-cols-2' : 'sm:grid-cols-1')} gap-6">
+                            ${stage.matches.map(match => `
+                                <div class="knockout-card bg-white p-4 rounded-lg shadow border border-gray-200 text-center">
+                                    <p class="font-semibold text-gray-700">${match.match}</p>
+                                    <p class="text-sm text-gray-500 mt-1">${match.result}</p>
+                                    <p class="text-sm mt-2 font-medium">Winner: <span class="font-bold ${match.winner === 'Australia' ? 'text-yellow-600' : (match.winner === 'New Zealand' ? 'text-gray-800' : 'text-blue-700')}">${match.winner}</span></p>
+                                    <p class="text-xs text-gray-500 mt-2">PoM: ${match.pom}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            createKnockoutStage();
+            
+            function createStories() {
+                const underdogContainer = document.getElementById('underdog-stories');
+                const momentsContainer = document.getElementById('defining-moments');
+                const controversiesContainer = document.getElementById('controversies');
+
+                underdogContainer.innerHTML = `<h3 class="text-xl font-semibold mb-4 text-gray-800">The Underdogs</h3>` + data.stories.underdogs.map(story => `
+                    <div class="bg-white p-5 rounded-lg shadow border border-gray-200 mb-4">
+                        <h4 class="font-bold text-md text-blue-800">${story.title}</h4>
+                        <p class="text-sm text-gray-600 mt-2">${story.content}</p>
+                    </div>
+                `).join('');
+
+                momentsContainer.innerHTML = `<h3 class="text-xl font-semibold mb-4 text-gray-800">Defining Moments</h3>` + data.stories.moments.map(story => `
+                    <div class="bg-white p-5 rounded-lg shadow border border-gray-200 mb-4">
+                        <h4 class="font-bold text-md text-green-800">${story.title}</h4>
+                        <p class="text-sm text-gray-600 mt-2">${story.content}</p>
+                    </div>
+                `).join('');
+
+                controversiesContainer.innerHTML = `<h3 class="text-xl font-semibold mb-4 text-gray-800">Controversies</h3>` + data.stories.controversies.map(story => `
+                    <div class="bg-white p-5 rounded-lg shadow border border-gray-200 mb-4">
+                        <h4 class="font-bold text-md text-red-800">${story.title}</h4>
+                        <p class="text-sm text-gray-600 mt-2">${story.content}</p>
+                    </div>
+                `).join('');
+            }
+
+            createStories();
+
+            function createScorecard(containerId, inningsData) {
+                const container = document.getElementById(containerId);
+                container.innerHTML = `
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Batsman</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dismissal</th>
+                                    <th class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">R</th>
+                                    <th class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">B</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                ${inningsData.map(p => `
+                                    <tr>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">${p.p}</td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${p.d}</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-800 font-semibold text-right">${p.r}</td>
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500 text-right">${p.b}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            createScorecard('nz-scorecard', data.finalScorecard.nzInnings);
+            createScorecard('aus-scorecard', data.finalScorecard.ausInnings);
+            
+            const tabBatting = document.getElementById('tab-batting');
+            const tabBowling = document.getElementById('tab-bowling');
+            const battingChartContainer = document.getElementById('batting-chart-container');
+            const bowlingChartContainer = document.getElementById('bowling-chart-container');
+
+            tabBatting.addEventListener('click', () => {
+                tabBatting.classList.add('active-tab');
+                tabBowling.classList.remove('active-tab');
+                battingChartContainer.classList.remove('hidden');
+                bowlingChartContainer.classList.add('hidden');
+            });
+
+            tabBowling.addEventListener('click', () => {
+                tabBowling.classList.add('active-tab');
+                tabBatting.classList.remove('active-tab');
+                bowlingChartContainer.classList.remove('hidden');
+                battingChartContainer.classList.add('hidden');
+            });
+            
+            const scorecardTabNz = document.getElementById('tab-nz-innings');
+            const scorecardTabAus = document.getElementById('tab-aus-innings');
+            const nzScorecard = document.getElementById('nz-scorecard');
+            const ausScorecard = document.getElementById('aus-scorecard');
+
+            scorecardTabNz.addEventListener('click', () => {
+                scorecardTabNz.classList.add('active-tab');
+                scorecardTabAus.classList.remove('active-tab');
+                nzScorecard.classList.remove('hidden');
+                ausScorecard.classList.add('hidden');
+            });
+            
+            scorecardTabAus.addEventListener('click', () => {
+                scorecardTabAus.classList.add('active-tab');
+                scorecardTabNz.classList.remove('active-tab');
+                ausScorecard.classList.remove('hidden');
+                nzScorecard.classList.add('hidden');
+            });
+
+
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#e5e7eb'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#1f2937',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 10,
+                        cornerRadius: 4,
+                        displayColors: false
+                    }
+                }
+            };
+            
+            const battersCtx = document.getElementById('topBattersChart').getContext('2d');
+            new Chart(battersCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.topBatters.map(p => `${p.player} (${p.team})`),
+                    datasets: [{
+                        label: 'Runs',
+                        data: data.topBatters.map(p => p.runs),
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { ...chartOptions, plugins: { ...chartOptions.plugins, tooltip: {
+                    ...chartOptions.plugins.tooltip,
+                    callbacks: {
+                        label: function(context) {
+                            const p = data.topBatters[context.dataIndex];
+                            return `Runs: ${p.runs}, HS: ${p.hs}, Avg: ${p.avg}, SR: ${p.sr}`;
+                        }
+                    }
+                }}}
+            });
+
+            const bowlersCtx = document.getElementById('topBowlersChart').getContext('2d');
+            new Chart(bowlersCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.topBowlers.map(p => `${p.player} (${p.team})`),
+                    datasets: [{
+                        label: 'Wickets',
+                        data: data.topBowlers.map(p => p.wkts),
+                        backgroundColor: 'rgba(220, 38, 38, 0.7)',
+                        borderColor: 'rgba(220, 38, 38, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { ...chartOptions, plugins: { ...chartOptions.plugins, tooltip: {
+                    ...chartOptions.plugins.tooltip,
+                    callbacks: {
+                        label: function(context) {
+                            const p = data.topBowlers[context.dataIndex];
+                            return `Wkts: ${p.wkts}, BBI: ${p.bbi}, Avg: ${p.avg}, Econ: ${p.econ}`;
+                        }
+                    }
+                }}}
+            });
+            
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active-nav');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active-nav');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

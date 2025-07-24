@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1983 Cricket World Cup: An Interactive History</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Subtle Accents -->
+    <!-- Application Structure Plan: The application is designed as a narrative journey, divided into four thematic acts: 'The Stage', 'The Turning Points', 'The Knockouts', and 'The Legends'. This non-linear structure allows users to explore the story based on interest. Navigation is handled by a top bar. The core interaction involves clicking on key matches or player names, which dynamically updates a central content area with detailed text, scorecards, and contextual charts. This design prioritizes storytelling and guided exploration over a raw data dump, making the complex event accessible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Goal: Set the Context -> Method: Static text cards for team introductions -> Interaction: None -> Justification: Provides a quick, digestible overview of the key players before diving into the narrative.
+        - Goal: Show Tournament Progression -> Method: Interactive HTML/CSS timeline for key matches -> Interaction: Click to display match details -> Justification: Visually represents the sequence of pivotal events and serves as the primary navigation for the core narrative.
+        - Goal: Compare Team Performance -> Method: Bar Chart (Chart.js) for Group Stage Standings -> Interaction: Hover for tooltips -> Justification: A clear, standard way to visualize the final group standings and run rates.
+        - Goal: Detail Match Results -> Method: Styled HTML tables for scorecards -> Interaction: None -> Justification: Presents detailed match data in a universally understood and readable format.
+        - Goal: Highlight Top Performers -> Method: Bar Charts (Chart.js) for top run-scorers and wicket-takers -> Interaction: Click buttons to switch between views -> Justification: Allows for direct comparison of the tournament's statistical leaders in a compact space.
+        - Goal: Emphasize Key Moments (Kapil's Catch, etc.) -> Method: Highlighted text blocks with icons -> Interaction: None -> Justification: Draws user attention to the most dramatic and impactful moments of the tournament narrative.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfbf8;
+            color: #3d3d3d;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .nav-button.active::after, .nav-button:hover::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #d97706;
+        }
+        .content-card {
+            background-color: #ffffff;
+            border: 1px solid #f0e9e0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        .timeline-item {
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .timeline-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800">The Summer of '83</h1>
+            <p class="text-lg text-gray-600 mt-2">How Kapil's Devils Conquered the World</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-gray-200 mb-8">
+            <button class="nav-button active py-4 px-6 text-lg font-semibold text-gray-700" onclick="showSection('stage')">The Stage</button>
+            <button class="nav-button py-4 px-6 text-lg font-semibold text-gray-700" onclick="showSection('turningPoints')">Turning Points</button>
+            <button class="nav-button py-4 px-6 text-lg font-semibold text-gray-700" onclick="showSection('knockouts')">The Knockouts</button>
+            <button class="nav-button py-4 px-6 text-lg font-semibold text-gray-700" onclick="showSection('legends')">The Legends</button>
+        </nav>
+
+        <main id="content-area">
+            
+            <section id="stage" class="space-y-8">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">A World Ruled by Calypso Kings</h2>
+                    <p class="text-lg text-gray-600">The 1983 World Cup began with one certainty: the West Indies were invincible. They were two-time champions, having never lost a World Cup match. In contrast, India were the perennial underdogs, given 66-1 odds of winning. This section introduces the main contenders and the format that set the stage for the greatest upset in cricket history.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="content-card p-6 rounded-lg">
+                        <h3 class="text-2xl font-bold mb-4 text-center">The Contenders</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold text-lg">👑 West Indies: The Champions</h4>
+                                <p class="text-gray-600">Led by Clive Lloyd, with batting genius Viv Richards and a terrifying pace quartet of Roberts, Holding, Garner, and Marshall. They were the undisputed kings of cricket.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg">🇮🇳 India: The Underdogs</h4>
+                                <p class="text-gray-600">A young team led by the charismatic all-rounder Kapil Dev. They had only won a single match in the previous two World Cups, against East Africa.</p>
+                            </div>
+                             <div>
+                                <h4 class="font-semibold text-lg">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England: The Hosts</h4>
+                                <p class="text-gray-600">A strong side playing in home conditions, considered a major threat for the title.</p>
+                            </div>
+                             <div>
+                                <h4 class="font-semibold text-lg">🇦🇺 Australia: The Rivals</h4>
+                                <p class="text-gray-600">A formidable team with legends like Dennis Lillee and Jeff Thomson, expected to challenge for the top spots.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-card p-6 rounded-lg">
+                        <h3 class="text-2xl font-bold mb-4 text-center">Group Stage Standings</h3>
+                        <p class="text-center text-gray-600 mb-4">The double round-robin format meant each team played others in their group twice, providing more chances for upsets. Here's how the groups finished.</p>
+                        <div class="chart-container">
+                            <canvas id="groupStageChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="turningPoints" class="hidden space-y-8">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Echoes of a Revolution</h2>
+                    <p class="text-lg text-gray-600">India's journey was defined by a series of improbable, game-changing moments where belief was forged and legends were born. Explore the key matches that propelled them from outsiders to contenders. Click on a match to see the details.</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-6 text-center">
+                    <div id="timeline-item-1" class="timeline-item content-card p-6 rounded-lg border-l-4 border-amber-600" onclick="showMatchDetails('ind-vs-wi1')">
+                        <p class="text-sm font-semibold text-gray-500">June 9, 1983</p>
+                        <h3 class="text-xl font-bold">The Giant Slayers</h3>
+                        <p>India vs West Indies</p>
+                    </div>
+                    <div id="timeline-item-2" class="timeline-item content-card p-6 rounded-lg border-l-4 border-amber-600" onclick="showMatchDetails('zim-vs-aus')">
+                        <p class="text-sm font-semibold text-gray-500">June 9, 1983</p>
+                        <h3 class="text-xl font-bold">The Debutant's Dream</h3>
+                        <p>Zimbabwe vs Australia</p>
+                    </div>
+                    <div id="timeline-item-3" class="timeline-item content-card p-6 rounded-lg border-l-4 border-amber-600" onclick="showMatchDetails('ind-vs-zim')">
+                        <p class="text-sm font-semibold text-gray-500">June 18, 1983</p>
+                        <h3 class="text-xl font-bold">The Miracle at Tunbridge Wells</h3>
+                        <p>India vs Zimbabwe</p>
+                    </div>
+                </div>
+
+                <div id="match-details-container" class="content-card p-8 rounded-lg mt-8 hidden">
+                </div>
+            </section>
+
+            <section id="knockouts" class="hidden space-y-8">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">One Step From Glory</h2>
+                    <p class="text-lg text-gray-600">Having defied all expectations, India marched into the knockout stages. Here, they faced the hosts in a tense semi-final before the ultimate showdown against the mighty West Indies at Lord's.</p>
+                </div>
+                <div class="grid md:grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="content-card p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-2 text-center">Semi-Final: India vs England</h3>
+                        <p class="text-center text-gray-500 mb-4">Old Trafford, Manchester</p>
+                        <p class="text-gray-600 mb-4">India produced a performance of immense composure. The medium-pacers, led by Kapil Dev and Mohinder Amarnath, shackled England's powerful batting lineup to a sub-par 213. A professional chase, anchored by Yashpal Sharma and finished by a blistering fifty from Sandeep Patil, saw India into the final.</p>
+                        <div class="text-center">
+                            <span class="font-bold text-amber-700">Result: India won by 6 wickets</span><br>
+                            <span class="text-sm text-gray-600">Player of the Match: Mohinder Amarnath</span>
+                        </div>
+                    </div>
+                    <div class="content-card p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-2 text-center">The Final: India vs West Indies</h3>
+                        <p class="text-center text-gray-500 mb-4">Lord's, London</p>
+                        <p class="text-gray-600 mb-4">The ultimate mismatch. Batting first, India were bundled out for a paltry 183. A third successive title for the West Indies seemed a formality. But what followed was a story of courage, belief, and one of the most iconic moments in sporting history.</p>
+                        <div class="text-center">
+                            <span class="font-bold text-amber-700">Result: India won by 43 runs</span><br>
+                            <span class="text-sm text-gray-600">Player of the Match: Mohinder Amarnath</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-card p-8 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4 text-center">The Catch That Turned the World Upside Down</h3>
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="text-5xl">🏃‍♂️...🏏...🏆</div>
+                        <p class="text-lg text-gray-600 flex-1">Viv Richards was batting like a man possessed, racing to 33 off 28 balls. The final was slipping away. He mistimed a pull shot off Madan Lal, the ball soaring high over mid-wicket. Kapil Dev, sprinting backwards, his eyes fixed on the ball, covered an immense distance to take a perfectly judged catch over his shoulder. It was the moment the tide turned. The most destructive batsman was out, and India suddenly believed.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="legends" class="hidden space-y-8">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Tournament Leaders</h2>
+                    <p class="text-lg text-gray-600">While India's victory was a team effort, the tournament was filled with outstanding individual performances. This section highlights the statistical leaders. Interestingly, India's success came without having a single player dominate the top of the batting charts, underscoring their collective spirit.</p>
+                </div>
+                
+                <div class="content-card p-6 rounded-lg">
+                    <div class="flex justify-center mb-4">
+                        <button id="show-runs-btn" class="py-2 px-4 bg-amber-600 text-white font-semibold rounded-l-md">Most Runs</button>
+                        <button id="show-wickets-btn" class="py-2 px-4 bg-white text-amber-600 font-semibold rounded-r-md border border-amber-600">Most Wickets</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="leadersChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="content-card p-8 rounded-lg">
+                     <h3 class="text-2xl font-bold mb-4 text-center">World Records & Milestones</h3>
+                     <ul class="list-disc list-inside space-y-2 text-gray-700 max-w-2xl mx-auto">
+                        <li><span class="font-semibold">Kapil Dev's 175*:</span> The highest individual score in ODI history at the time, and the first ever century by an Indian in an ODI.</li>
+                        <li><span class="font-semibold">Record 9th-Wicket Stand:</span> Kapil Dev and Syed Kirmani's 126-run partnership against Zimbabwe was a world record.</li>
+                        <li><span class="font-semibold">First 7-Wicket Haul:</span> West Indies' Winston Davis took the first-ever 7-wicket haul in ODI history (7/51 vs Australia).</li>
+                        <li><span class="font-semibold">End of an Era:</span> India became the first team to ever defeat the West Indies in a World Cup match.</li>
+                     </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const sections = ['stage', 'turningPoints', 'knockouts', 'legends'];
+        const navButtons = document.querySelectorAll('.nav-button');
+        const contentArea = document.getElementById('content-area');
+
+        function showSection(sectionId) {
+            sections.forEach(id => {
+                const sectionEl = document.getElementById(id);
+                if (id === sectionId) {
+                    sectionEl.classList.remove('hidden');
+                } else {
+                    sectionEl.classList.add('hidden');
+                }
+            });
+
+            navButtons.forEach(button => {
+                if (button.textContent.toLowerCase().replace(' ', '') === sectionId.toLowerCase()) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+            window.scrollTo(0, 0);
+        }
+
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const sectionId = button.textContent.toLowerCase().replace(' ', '');
+                showSection(sectionId);
+            });
+        });
+        
+        const matchDetails = {
+            'ind-vs-wi1': {
+                title: 'India vs West Indies - The Upset',
+                summary: "On the opening day, India achieved the unthinkable: they defeated the mighty West Indies, a team that had never lost a World Cup match. Yashpal Sharma's gritty 89 anchored India to a competitive 262. A disciplined, collective bowling effort then saw the champions bowled out for 228, sending shockwaves through the tournament.",
+                result: 'India won by 34 runs',
+                player: 'Yashpal Sharma (89 runs)'
+            },
+            'zim-vs-aus': {
+                title: 'Zimbabwe vs Australia - The Debutant\'s Dream',
+                summary: "On the same day, history was made at Trent Bridge. In their first-ever ODI, part-time cricketers from Zimbabwe stunned a formidable Australian side. Captain Duncan Fletcher first rescued his team with an unbeaten 69, then took 4/42 with the ball to seal a historic 13-run victory.",
+                result: 'Zimbabwe won by 13 runs',
+                player: 'Duncan Fletcher (69* & 4/42)'
+            },
+            'ind-vs-zim': {
+                title: 'India vs Zimbabwe - The Miracle at Tunbridge Wells',
+                summary: "This was the innings that forged a nation's belief. With India facing elimination at a disastrous 17 for 5, captain Kapil Dev walked in and played arguably the greatest ODI innings ever. His breathtaking, unbeaten 175 from 138 balls, which included a world-record 126-run 9th wicket partnership with Syed Kirmani, single-handedly won the match. Famously, the innings was never televised, adding to its mythical status.",
+                result: 'India won by 31 runs',
+                player: 'Kapil Dev (175*)'
+            }
+        };
+
+        function showMatchDetails(matchId) {
+            const container = document.getElementById('match-details-container');
+            const details = matchDetails[matchId];
+            
+            container.innerHTML = `
+                <h3 class="text-2xl font-bold mb-2 text-center">${details.title}</h3>
+                <p class="text-lg text-gray-600 mb-4">${details.summary}</p>
+                <div class="text-center bg-amber-50 p-4 rounded-lg">
+                    <p class="font-bold text-amber-700">${details.result}</p>
+                    <p class="text-sm text-gray-600">Key Performer: ${details.player}</p>
+                </div>
+            `;
+            container.classList.remove('hidden');
+        }
+
+        let leadersChartInstance;
+        let groupStageChartInstance;
+
+        const topRunScorers = {
+            labels: ['David Gower (ENG)', 'Viv Richards (WI)', 'Graeme Fowler (ENG)', 'Zaheer Abbas (PAK)', 'Kapil Dev (IND)'],
+            data: [384, 367, 360, 313, 303]
+        };
+
+        const topWicketTakers = {
+            labels: ['Roger Binny (IND)', 'Madan Lal (IND)', 'Ashantha de Mel (SL)', 'Richard Hadlee (NZ)', 'Vic Marks (ENG)'],
+            data: [18, 17, 17, 14, 13]
+        };
+        
+        const groupData = {
+            labels: ['England', 'Pakistan', 'New Zealand', 'Sri Lanka', 'West Indies', 'India', 'Australia', 'Zimbabwe'],
+            points: [20, 12, 12, 4, 20, 16, 8, 4],
+            groups: ['A', 'A', 'A', 'A', 'B', 'B', 'B', 'B']
+        };
+
+        const chartOptions = (title) => ({
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+                title: { display: true, text: title, font: { size: 18 }, color: '#3d3d3d' },
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.raw}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: { color: '#f0f0f0' }
+                },
+                y: {
+                    grid: { display: false }
+                }
+            }
+        });
+
+        function createOrUpdateLeadersChart(data, label, title) {
+            const ctx = document.getElementById('leadersChart').getContext('2d');
+            if (leadersChartInstance) {
+                leadersChartInstance.destroy();
+            }
+            leadersChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: label,
+                        data: data.data,
+                        backgroundColor: '#f59e0b',
+                        borderColor: '#d97706',
+                        borderWidth: 1
+                    }]
+                },
+                options: chartOptions(title)
+            });
+        }
+        
+        function createGroupStageChart() {
+            const ctx = document.getElementById('groupStageChart').getContext('2d');
+            if (groupStageChartInstance) {
+                groupStageChartInstance.destroy();
+            }
+            groupStageChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: groupData.labels,
+                    datasets: [{
+                        label: 'Points',
+                        data: groupData.points,
+                        backgroundColor: groupData.groups.map(g => g === 'A' ? 'rgba(217, 119, 6, 0.7)' : 'rgba(245, 158, 11, 0.7)'),
+                        borderColor: groupData.groups.map(g => g === 'A' ? '#b45309' : '#d97706'),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'Final Group Stage Points', font: { size: 18 }, color: '#3d3d3d' },
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Points: ${context.raw}`;
+                                },
+                                afterLabel: function(context) {
+                                    return `Group: ${groupData.groups[context.dataIndex]}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('show-runs-btn').addEventListener('click', (e) => {
+            createOrUpdateLeadersChart(topRunScorers, 'Runs', 'Top 5 Run Scorers');
+            e.target.classList.add('bg-amber-600', 'text-white');
+            e.target.classList.remove('bg-white', 'text-amber-600', 'border', 'border-amber-600');
+            const wicketsBtn = document.getElementById('show-wickets-btn');
+            wicketsBtn.classList.remove('bg-amber-600', 'text-white');
+            wicketsBtn.classList.add('bg-white', 'text-amber-600', 'border', 'border-amber-600');
+        });
+
+        document.getElementById('show-wickets-btn').addEventListener('click', (e) => {
+            createOrUpdateLeadersChart(topWicketTakers, 'Wickets', 'Top 5 Wicket Takers');
+            e.target.classList.add('bg-amber-600', 'text-white');
+            e.target.classList.remove('bg-white', 'text-amber-600', 'border', 'border-amber-600');
+            const runsBtn = document.getElementById('show-runs-btn');
+            runsBtn.classList.remove('bg-amber-600', 'text-white');
+            runsBtn.classList.add('bg-white', 'text-amber-600', 'border', 'border-amber-600');
+        });
+
+        window.onload = () => {
+            showSection('stage');
+            createOrUpdateLeadersChart(topRunScorers, 'Runs', 'Top 5 Run Scorers');
+            createGroupStageChart();
+        };
+    </script>
+</body>
+</html>
